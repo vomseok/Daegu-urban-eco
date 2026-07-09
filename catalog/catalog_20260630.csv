@@ -1,0 +1,33 @@
+﻿kind,file,epsg,needs_reproject,geom_type,features,n_fields,size_mb,encoding,path
+vector,비오톱 등급 평가 결과.shp,5186,True,Polygon,152584,28,175.6,UTF-8,D:/my Data/GIS/Data/Source/2_public D/대구시 비오톱 자료\05_비오톱평가 결과\비오톱 등급 평가 결과.shp
+vector,A_유형도(소분류).shp,5187,True,Polygon,145539,45,167.5,UTF-8,D:/my Data/GIS/Data/Source/2_public D/대구시 도시생태현황도 2차\01_최종비오톱 GIS파일\A버전\A_유형도(소분류).shp
+vector,제2차_대구광역시_최종비오톱평가도.shp,5187,True,Polygon,144649,21,167.3,UTF-8,D:/my Data/GIS/Data/Source/2_public D/대구시 도시생태현황도 2차\01_최종비오톱 GIS파일\제2차_대구광역시_최종비오톱평가도.shp
+vector,제2차_대구광역시_최종비오톱평가도.shp,5187,True,Polygon,144768,61,167.3,UTF-8,D:/my Data/GIS/Data/Source/2_public D/대구시 도시생태현황도 2차\01_최종비오톱 GIS파일\B버전\제2차_대구광역시_최종비오톱평가도.shp
+vector,250225_제2차_대구광역시_최종비오톱평가도_보완_제출용.shp,5187,True,Polygon,144778,62,167.3,UTF-8,D:/my Data/GIS/Data/Source/2_public D/대구시 도시생태현황도 2차\01_최종비오톱 GIS파일\제2차 대구광역시 도시생태현황지도 성과품 보완\250225_제2차_대구광역시_최종비오톱평가도_보완_제출용.shp
+vector,대구전체현존식생수정본20190524.shp,5186,True,Polygon,123663,21,153.9,UTF-8,D:/my Data/GIS/Data/Source/2_public D/대구시 비오톱 자료\shp파일_현존식생도\대구전체현존식생수정본20190524.shp
+vector,달성군현존식생수정본20190524.shp,5186,True,Polygon,35812,23,64.7,UTF-8,D:/my Data/GIS/Data/Source/2_public D/대구시 비오톱 자료\shp파일_현존식생도\달성군현존식생수정본20190524.shp
+vector,동구현존식생수정본20190524.shp,5186,True,Polygon,23141,23,35.9,UTF-8,D:/my Data/GIS/Data/Source/2_public D/대구시 비오톱 자료\shp파일_현존식생도\동구현존식생수정본20190524.shp
+vector,북구현존식생수정본20190524.shp,5186,True,Polygon,15692,23,16.8,UTF-8,D:/my Data/GIS/Data/Source/2_public D/대구시 비오톱 자료\shp파일_현존식생도\북구현존식생수정본20190524.shp
+vector,수성구현존식생수정본20190524.shp,5186,True,Polygon,15358,23,13.1,UTF-8,D:/my Data/GIS/Data/Source/2_public D/대구시 비오톱 자료\shp파일_현존식생도\수성구현존식생수정본20190524.shp
+vector,달서구현존식생수정본20190524.shp,5186,True,Polygon,12905,23,9.4,UTF-8,D:/my Data/GIS/Data/Source/2_public D/대구시 비오톱 자료\shp파일_현존식생도\달서구현존식생수정본20190524.shp
+vector,남구현존식생수정본20190524.shp,5186,True,Polygon,8584,23,9.1,UTF-8,D:/my Data/GIS/Data/Source/2_public D/대구시 비오톱 자료\shp파일_현존식생도\남구현존식생수정본20190524.shp
+vector,서구현존식생수정본20190524.shp,5186,True,Polygon,8951,23,5.2,UTF-8,D:/my Data/GIS/Data/Source/2_public D/대구시 비오톱 자료\shp파일_현존식생도\서구현존식생수정본20190524.shp
+vector,중구현존식생수정본20190524.shp,5186,True,Polygon,3371,23,1.9,UTF-8,D:/my Data/GIS/Data/Source/2_public D/대구시 비오톱 자료\shp파일_현존식생도\중구현존식생수정본20190524.shp
+vector,비오톱_육상식물.shp,5186,True,Point,3,10,0.0,UTF-8,D:/my Data/GIS/Data/Source/2_public D/대구시 비오톱 자료\05_비오톱평가 결과\동식물조사 자료\01_식물\shp파일\비오톱_육상식물.shp
+vector,비오톱_포유류.shp,5186,True,Point,100,23,0.0,UTF-8,D:/my Data/GIS/Data/Source/2_public D/대구시 비오톱 자료\05_비오톱평가 결과\동식물조사 자료\02_포유류\포유류 종다양성분포도\비오톱_포유류.shp
+vector,비오톱_포유류_보호종.shp,5186,True,Point,100,8,0.0,UTF-8,D:/my Data/GIS/Data/Source/2_public D/대구시 비오톱 자료\05_비오톱평가 결과\동식물조사 자료\02_포유류\포유류법정보호종분포도\비오톱_포유류_보호종.shp
+vector,비오톱_육상동물_교란종.shp,5186,True,Point,100,7,0.0,UTF-8,D:/my Data/GIS/Data/Source/2_public D/대구시 비오톱 자료\05_비오톱평가 결과\동식물조사 자료\02_포유류\포유류생태계교란생물분포도\비오톱_육상동물_교란종.shp
+vector,비오톱_조류_보호종.shp,5186,True,Point,51,12,0.0,UTF-8,D:/my Data/GIS/Data/Source/2_public D/대구시 비오톱 자료\05_비오톱평가 결과\동식물조사 자료\03_조류\조류 법정보호종분포도\비오톱_조류_보호종.shp
+vector,비오톱_조류_보호종_섭금류.shp,5186,True,Point,13,6,0.0,UTF-8,D:/my Data/GIS/Data/Source/2_public D/대구시 비오톱 자료\05_비오톱평가 결과\동식물조사 자료\03_조류\조류 법정보호종분포도\비오톱_조류_보호종_섭금류.shp
+vector,비오톱_조류_보호종_수조류.shp,5186,True,Point,9,5,0.0,UTF-8,D:/my Data/GIS/Data/Source/2_public D/대구시 비오톱 자료\05_비오톱평가 결과\동식물조사 자료\03_조류\조류 법정보호종분포도\비오톱_조류_보호종_수조류.shp
+vector,비오톱_조류.shp,5186,True,Point,100,112,0.0,UTF-8,D:/my Data/GIS/Data/Source/2_public D/대구시 비오톱 자료\05_비오톱평가 결과\동식물조사 자료\03_조류\조류종다양성분포도\비오톱_조류.shp
+vector,비오톱_곤충류_교란종.shp,5186,True,Point,30,4,0.0,UTF-8,D:/my Data/GIS/Data/Source/2_public D/대구시 비오톱 자료\05_비오톱평가 결과\동식물조사 자료\04_곤충류\shp파일\곤충류 생태계 교란생물 분포도\비오톱_곤충류_교란종.shp
+vector,비오톱_곤충류.shp,5186,True,Point,30,4,0.0,UTF-8,D:/my Data/GIS/Data/Source/2_public D/대구시 비오톱 자료\05_비오톱평가 결과\동식물조사 자료\04_곤충류\shp파일\곤충류종다양성분포도\비오톱_곤충류.shp
+vector,비오톱_곤충류_보호종.shp,5186,True,Point,30,4,0.0,UTF-8,D:/my Data/GIS/Data/Source/2_public D/대구시 비오톱 자료\05_비오톱평가 결과\동식물조사 자료\04_곤충류\shp파일\곤충보호종\비오톱_곤충류_보호종.shp
+vector,비오톱_양서파충류_보호종.shp,5186,True,Point,102,6,0.0,UTF-8,D:/my Data/GIS/Data/Source/2_public D/대구시 비오톱 자료\05_비오톱평가 결과\동식물조사 자료\05_양서파충류\양서파충류법정보호종분포도\비오톱_양서파충류_보호종.shp
+vector,비오톱_육상동물_교란종.shp,5186,True,Point,100,7,0.0,UTF-8,D:/my Data/GIS/Data/Source/2_public D/대구시 비오톱 자료\05_비오톱평가 결과\동식물조사 자료\05_양서파충류\양서파충류생태계교란생물분포도\비오톱_육상동물_교란종.shp
+vector,비오톱_양서파충류.shp,5186,True,Point,100,28,0.0,UTF-8,D:/my Data/GIS/Data/Source/2_public D/대구시 비오톱 자료\05_비오톱평가 결과\동식물조사 자료\05_양서파충류\양서파충류종다양성분포도\비오톱_양서파충류.shp
+vector,비오톱_어류_교란종.shp,5186,True,Point,46,6,0.0,UTF-8,D:/my Data/GIS/Data/Source/2_public D/대구시 비오톱 자료\05_비오톱평가 결과\동식물조사 자료\06_어류\어류 생태계교란 생물 분포도\비오톱_어류_교란종.shp
+vector,비오톱_어류.shp,5186,True,Point,60,41,0.0,UTF-8,D:/my Data/GIS/Data/Source/2_public D/대구시 비오톱 자료\05_비오톱평가 결과\동식물조사 자료\06_어류\어류의 출현 종수분포도\비오톱_어류.shp
+vector,비오톱_저서성_보호종.shp,5186,True,Point,60,4,0.0,UTF-8,D:/my Data/GIS/Data/Source/2_public D/대구시 비오톱 자료\05_비오톱평가 결과\동식물조사 자료\07_저서성대형무척추동물\저서성대형무척추동물 법적보호종 분포도\비오톱_저서성_보호종.shp
+vector,비오톱_저서성류.shp,5186,True,Point,60,144,0.0,UTF-8,D:/my Data/GIS/Data/Source/2_public D/대구시 비오톱 자료\05_비오톱평가 결과\동식물조사 자료\07_저서성대형무척추동물\저서성대형부척주동물의출현종수분포도\비오톱_저서성류.shp

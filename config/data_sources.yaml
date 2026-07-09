@@ -1,0 +1,24 @@
+# 데이터 소스 등록표 — 시스템이 어디서 무슨 자료를 쓸지 정의
+# (반복 사용: 새 자료를 추가하면 roots에 폴더만 더해 다시 실행)
+
+target_crs: 5179        # 통일 기준 좌표계 (UTM-K)
+
+# 단계0 스캐너가 훑을 폴더들 (하위 폴더까지 재귀 탐색)
+scan_roots:
+  - "D:/my Data/GIS/Data/Source/2_public D/대구시 비오톱 자료"
+  - "D:/my Data/GIS/Data/Source/2_public D/대구시 도시생태현황도 2차"
+
+# 분석에 쓸 '대표 파일' 지정 (버전이 여럿일 때 무엇을 쓸지 못박음)
+datasets:
+  biotope_2019:
+    label: "도시생태현황도 1차(2019)"
+    path: "D:/my Data/GIS/Data/Source/2_public D/대구시 비오톱 자료/05_비오톱평가 결과/비오톱 등급 평가 결과.shp"
+    epsg: 5186
+    type_fields: [U대분류, U중분류, U소분류, U세분류]
+    grade_field: 최종등급
+  biotope_2024:
+    label: "도시생태현황도 2차(보완 제출용, 2025-02)"
+    path: "D:/my Data/GIS/Data/Source/2_public D/대구시 도시생태현황도 2차/01_최종비오톱 GIS파일/제2차 대구광역시 도시생태현황지도 성과품 보완/250225_제2차_대구광역시_최종비오톱평가도_보완_제출용.shp"
+    epsg: 5187
+    type_fields: [유형대분류, 유형중분류, 유형소분류]
+    grade_field: 최종평가등

@@ -1,0 +1,22 @@
+# ── 가상환경 ──
+.venv/
+__pycache__/
+*.pyc
+
+# ── 대용량 원본·파생 데이터 (재생성 가능) ──
+# biotope 정제본: preprocess.py 로 원본 shp에서 재생성
+data_clean/biotope_*.gpkg
+# OSM 보행망: fetch_osm_walk.py 로 재수집
+data_clean/osm_walk_*.graphml
+# (districts_5179.gpkg 는 소용량이라 포함)
+
+# ── 세션·개인·임시 파일 ──
+.claude/
+cache/
+**/scratchpad/
+outputs/**/_*.log
+outputs/_*.log
+
+# ── OS ──
+Thumbs.db
+.DS_Store

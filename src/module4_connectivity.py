@@ -185,7 +185,7 @@ def solve_connectivity(R, gmask):
     log(f"  유효 코어쌍 {len(reffs)}개(미연결 {n_skip}개 제외), 평균 유효저항 R_eff={reff_mean:.3f} (낮을수록 양호)")
     return curmap, reff_mean, idx, cores
 
-def save_raster_png(arr, transform, base, title):
+def save_raster_png(arr, transform, base, title, gu=None):
     prof=dict(driver="GTiff", height=arr.shape[0], width=arr.shape[1], count=1,
               dtype="float32", crs="EPSG:5179", transform=transform, nodata=np.nan)
     with rasterio.open(base+".tif","w",**prof) as dst: dst.write(arr,1)
@@ -200,9 +200,28 @@ def save_raster_png(arr, transform, base, title):
         plt.rcParams["axes.unicode_minus"]=False
         a=arr.copy()
         vmax=np.nanpercentile(a,98) if np.isfinite(a).any() else 1
-        fig,ax=plt.subplots(figsize=(7,7))
+        fig,ax=plt.subplots(figsize=(10,10))
         im=ax.imshow(a, cmap="magma", vmin=0, vmax=vmax)
-        ax.set_title(title); ax.axis("off")
+
+        # 구군 경계 오버레이
+        if gu:
+            try:
+                d=gpd.read_file(os.path.join(CLEAN,"districts_5179.gpkg"),engine="pyogrio")
+                # 래스터 범위 내 구군만 필터링
+                bounds=rasterio.transform.array_bounds(arr.shape[0], arr.shape[1], transform)
+                window_geom=shapely.box(*bounds)
+                d_sub=d[d.geometry.intersects(window_geom)]
+                d_sub.plot(ax=ax, facecolor="none", edgecolor="white", linewidth=1.5, alpha=0.9)
+                # 구군 명 라벨
+                for idx,row in d_sub.iterrows():
+                    centroid=row.geometry.centroid
+                    ax.text(centroid.x, centroid.y, row["구군"],
+                           fontsize=9, ha="center", va="center", color="white",
+                           bbox=dict(boxstyle="round,pad=0.2", facecolor="black", alpha=0.6, edgecolor="white"))
+            except:
+                pass
+
+        ax.set_title(title, fontsize=12, fontweight="bold"); ax.axis("off")
         fig.colorbar(im,ax=ax,shrink=0.7,label="전류밀도(연결성)")
         fig.tight_layout(); fig.savefig(base+".png",dpi=140); plt.close(fig)
     except Exception as e:
@@ -238,8 +257,8 @@ def main():
             rows.append({"연도":year,"평균유효저항":None,"평균전류밀도":None,"코어수":len(cores)})
             continue
         base=os.path.join(outdir,f"module4C_{gu}_{year}_전류밀도")
-        save_raster_png(curmap,transform,base,f"{gu} 녹지연결성(전류밀도) {year}")
-        log(f"  ✓ {base}.tif/.png")
+        save_raster_png(curmap,transform,base,f"{gu} 녹지연결성(전류밀도) {year}", gu=gu)
+        log(f"  ✓ {base}.tif/.png (구군 경계·명 포함)")
         rows.append({"연도":year,"평균유효저항":round(reff,3),
                      "평균전류밀도":round(float(np.nanmean(curmap)),4),
                      "최대전류밀도":round(float(np.nanmax(curmap)),3),"코어수":len(cores)})

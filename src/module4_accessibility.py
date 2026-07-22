@@ -174,7 +174,7 @@ def main():
         gpath=os.path.join(outdir,f"module4A_{gu}_{year}_접근시간.gpkg")
         out[[out.geometry.name,"val","time_min"]].to_file(gpath,driver="GPKG")
         log(f"  ✓ {gpath}  (가중평균 {wmean:.1f}분)")
-    # 지도(2019 기준)
+    # 지도(2019 기준) + 구군 경계·명 라벨
     try:
         import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
         from matplotlib import font_manager
@@ -183,16 +183,32 @@ def main():
             font_manager.fontManager.addfont(fp)
             plt.rcParams["font.family"]=font_manager.FontProperties(fname=fp).get_name()
         plt.rcParams["axes.unicode_minus"]=False
+
+        # 구군 경계 로드
+        districts=gpd.read_file(os.path.join(CLEAN,"districts_5179.gpkg"),engine="pyogrio")
+
         for year in ["2019","2024"]:
             if year not in pop_time: continue
-            fig,ax=plt.subplots(figsize=(7,7))
+            fig,ax=plt.subplots(figsize=(10,10))
             pp=pop.copy(); pp["t"]=np.clip(pop_time[year],0,30)
             pp.plot(column="t",cmap="RdYlGn_r",legend=True,ax=ax,markersize=2,
                     legend_kwds={"label":"녹지까지 도보(분)","shrink":0.6})
-            ax.set_title(f"{gu} 녹지 접근성(도보시간) {year}"); ax.axis("off")
+
+            # 구군 경계 선 추가
+            districts.plot(ax=ax,facecolor="none",edgecolor="black",linewidth=1.5,alpha=0.8)
+
+            # 구군 명 레이블 추가
+            for idx,row in districts.iterrows():
+                centroid=row.geometry.centroid
+                ax.text(centroid.x, centroid.y, row["구군"],
+                       fontsize=10, ha="center", va="center",
+                       bbox=dict(boxstyle="round,pad=0.3", facecolor="white", alpha=0.7, edgecolor="gray"))
+
+            ax.set_title(f"{gu} 녹지 접근성(도보시간) {year}", fontsize=14, fontweight="bold")
+            ax.axis("off")
             fig.tight_layout(); fig.savefig(os.path.join(outdir,f"module4A_{gu}_{year}_접근시간.png"),dpi=140)
             plt.close(fig)
-        log("  ✓ 접근성 지도 png")
+        log("  ✓ 접근성 지도 png (구군 경계·명 포함)")
     except Exception as e:
         log(f"  (지도 생략:{e})")
 

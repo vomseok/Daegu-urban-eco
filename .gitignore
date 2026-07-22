@@ -17,6 +17,15 @@ cache/
 outputs/**/_*.log
 outputs/_*.log
 
+# ── 출력 파일 (대용량, 재생성 가능) ──
+outputs/*/*.gpkg
+outputs/*/*.tif
+outputs/*/*.png
+outputs/*/*.csv
+outputs/*/*.xlsx
+# 단, 종합 보고서는 추가
+!outputs/*/종합분석보고서*.docx
+
 # ── OS ──
 Thumbs.db
 .DS_Store

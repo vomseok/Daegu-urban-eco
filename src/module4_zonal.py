@@ -10,7 +10,7 @@ r"""
 출력:  outputs\<일자>\module4_3단위요약.xlsx  + 전역 연결성/접근성 지도·차이맵 png
 실행:  .venv\Scripts\python.exe src\module4_zonal.py
 """
-import os, sys, io, datetime
+import os, sys, io, datetime, platform
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 import numpy as np
 import pandas as pd
@@ -22,16 +22,25 @@ import matplotlib.pyplot as plt
 from matplotlib import font_manager
 
 PROJ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-STAMP = datetime.date.today().strftime("%Y%m%d")
+STAMP = "20260705"
 OUTDIR = os.path.join(PROJ, "outputs", STAMP)
 DIST = os.path.join(PROJ, "data_clean", "districts_5179.gpkg")
 THRESH = [5, 10, 15]
 def p(f): return os.path.join(OUTDIR, f)
 
-fp = r"C:\Windows\Fonts\malgun.ttf"
-if os.path.exists(fp):
-    font_manager.fontManager.addfont(fp)
-    plt.rcParams["font.family"] = font_manager.FontProperties(fname=fp).get_name()
+# 한글 폰트 설정 (Windows/Linux 모두 지원)
+if platform.system() == "Windows":
+    fp = r"C:\Windows\Fonts\malgun.ttf"
+    if os.path.exists(fp):
+        font_manager.fontManager.addfont(fp)
+        plt.rcParams["font.family"] = font_manager.FontProperties(fname=fp).get_name()
+else:  # Linux/macOS
+    fp = "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc"
+    if os.path.exists(fp):
+        font_manager.fontManager.addfont(fp)
+        plt.rcParams["font.sans-serif"] = ["Noto Sans CJK KR", "Noto Sans CJK JP", "DejaVu Sans"]
+        plt.rcParams["font.family"] = "sans-serif"
+
 plt.rcParams["axes.unicode_minus"] = False
 
 def log(m=""): print(m, flush=True)
@@ -113,6 +122,14 @@ def citymap_conn(arrs, transform, shape, dist):
         fig, ax = plt.subplots(figsize=(9, 8)); ax.set_facecolor("#d9d9d9")
         im = ax.imshow(a, cmap="magma", extent=extent, origin="upper", vmin=0, vmax=vmax)
         dist.boundary.plot(ax=ax, color="cyan", linewidth=0.7)
+        for idx, row in dist.iterrows():
+            centroid = row.geometry.centroid
+            ax.text(centroid.x, centroid.y, row["구군"],
+                   fontsize=15, ha="center", va="center",
+                   color="black",
+                   bbox=dict(boxstyle="round,pad=0.3",
+                            facecolor="yellow", alpha=0.85,
+                            edgecolor="black", linewidth=1))
         ax.set_title(f"대구 녹지 연결성(전류밀도) {y}"); ax.set_xticks([]); ax.set_yticks([])
         fig.colorbar(im, ax=ax, shrink=0.6, label="전류밀도")
         fig.tight_layout(); fig.savefig(p(f"module4_대구_연결성_{y}.png"), dpi=140); plt.close(fig)
@@ -120,6 +137,14 @@ def citymap_conn(arrs, transform, shape, dist):
     fig, ax = plt.subplots(figsize=(9, 8)); ax.set_facecolor("#d9d9d9")
     im = ax.imshow(d, cmap="RdBu", extent=extent, origin="upper", vmin=-v, vmax=v)
     dist.boundary.plot(ax=ax, color="black", linewidth=0.7)
+    for idx, row in dist.iterrows():
+        centroid = row.geometry.centroid
+        ax.text(centroid.x, centroid.y, row["구군"],
+               fontsize=15, ha="center", va="center",
+               color="black",
+               bbox=dict(boxstyle="round,pad=0.3",
+                        facecolor="yellow", alpha=0.85,
+                        edgecolor="black", linewidth=1))
     ax.set_title("대구 연결성 변화 (2024-2019)\n파랑=증가, 빨강=감소"); ax.set_xticks([]); ax.set_yticks([])
     fig.colorbar(im, ax=ax, shrink=0.6, label="Δ전류밀도")
     fig.tight_layout(); fig.savefig(p("module4_대구_연결성_차이.png"), dpi=140); plt.close(fig)
@@ -133,6 +158,14 @@ def citymap_access(m, dist):
               markersize=1, vmin=0, vmax=30, legend=True,
               legend_kwds={"label": "녹지까지 도보(분)", "shrink": 0.6, "extend": "max"})
         dist.boundary.plot(ax=ax, color="black", linewidth=0.7)
+        for idx, row in dist.iterrows():
+            centroid = row.geometry.centroid
+            ax.text(centroid.x, centroid.y, row["구군"],
+                   fontsize=15, ha="center", va="center",
+                   color="white",
+                   bbox=dict(boxstyle="round,pad=0.3",
+                            facecolor="black", alpha=0.7,
+                            edgecolor="white", linewidth=1))
         ax.set_title(f"대구 녹지 접근성(도보, 거주격자) {y}"); ax.set_xticks([]); ax.set_yticks([])
         fig.tight_layout(); fig.savefig(p(f"module4_대구_접근성_{y}.png"), dpi=140); plt.close(fig)
     gdf["dt"] = gdf["t24"] - gdf["t19"]; v = float(np.nanpercentile(np.abs(gdf["dt"].dropna()), 98)) or 1
@@ -140,6 +173,14 @@ def citymap_access(m, dist):
     gdf.plot(column="dt", cmap="RdBu_r", ax=ax, markersize=1, vmin=-v, vmax=v, legend=True,
              legend_kwds={"label": "Δ도보(분) 2024-2019", "shrink": 0.6})
     dist.boundary.plot(ax=ax, color="black", linewidth=0.7)
+    for idx, row in dist.iterrows():
+        centroid = row.geometry.centroid
+        ax.text(centroid.x, centroid.y, row["구군"],
+               fontsize=15, ha="center", va="center",
+               color="white",
+               bbox=dict(boxstyle="round,pad=0.3",
+                        facecolor="black", alpha=0.7,
+                        edgecolor="white", linewidth=1))
     ax.set_title("대구 접근성 변화 (2024-2019)\n파랑=개선(단축), 빨강=악화(증가)"); ax.set_xticks([]); ax.set_yticks([])
     fig.tight_layout(); fig.savefig(p("module4_대구_접근성_차이.png"), dpi=140); plt.close(fig)
     log("  ✓ 접근성 전역·차이맵")

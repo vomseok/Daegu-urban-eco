@@ -83,25 +83,36 @@ def create_daegu_accessibility_maps():
 def create_daegu_connectivity_maps():
     """연결성 지도 재생성 (구군 경계·레이블 포함)"""
     print("연결성 지도 생성 중...")
+    import rasterio
+    import matplotlib.colors as mcolors
 
     districts = gpd.read_file(os.path.join(CLEAN, "districts_5179.gpkg"), engine="pyogrio")
     outdir = os.path.join(OUTROOT, "20260705")
 
     for year in ["2019", "2024"]:
         try:
-            gpkg_path = os.path.join(outdir, f"module4C_대구_{year}_전류밀도.gpkg")
-            if not os.path.exists(gpkg_path):
-                print(f"  ✗ {year}: GPKG 없음")
+            tif_path = os.path.join(outdir, f"module4C_대구_{year}_전류밀도.tif")
+            if not os.path.exists(tif_path):
+                print(f"  ✗ {year}: TIF 없음")
                 continue
 
-            data = gpd.read_file(gpkg_path, engine="pyogrio")
+            # TIF 파일로부터 래스터 데이터와 좌표 읽기
+            with rasterio.open(tif_path) as src:
+                data = src.read(1)  # 첫 번째 밴드
+                transform = src.transform
+                bounds = src.bounds
 
             fig, ax = plt.subplots(figsize=(12, 12), dpi=140)
-            if "current" in data.columns:
-                data.plot(column="current", cmap="magma", ax=ax, markersize=3,
-                         legend=True, legend_kwds={"label":"회로 전류밀도","shrink":0.6})
-            else:
-                data.plot(ax=ax, markersize=3, alpha=0.6)
+
+            # 래스터 데이터 시각화 (magma colormap)
+            masked_data = np.ma.masked_where(np.isnan(data), data)
+            im = ax.imshow(masked_data, cmap="magma", transform=None,
+                          extent=[bounds.left, bounds.right, bounds.bottom, bounds.top],
+                          aspect='auto', origin='upper', interpolation='nearest')
+
+            # 컬러바 추가
+            cbar = plt.colorbar(im, ax=ax, shrink=0.6)
+            cbar.set_label("회로 전류밀도", fontsize=12)
 
             # 구군 경계 (lime green)
             districts.plot(ax=ax, facecolor="none", edgecolor="lime", linewidth=4, alpha=1.0)

@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 r"""
-분석 지도에 행정경계 및 구군 레이블 추가
-==========================================
-기존 분석 결과 지도(접근성, 연결성)에 구군 경계와 명칭을 후처리로 추가합니다.
+대구 전역 분석 지도 재생성 (구군 경계·레이블 포함)
+================================================
+GIS 데이터로부터 접근성, 연결성 지도를 재생성하되
+구군 경계와 명칭을 포함시킵니다.
 
 실행: python src/add_district_boundaries.py
 """
-import os, sys, io, glob
+import os, sys, io
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 import numpy as np
 import geopandas as gpd
 import matplotlib.pyplot as plt
 from matplotlib import font_manager
-from PIL import Image
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -27,123 +27,105 @@ if os.path.exists(fp):
     plt.rcParams["font.family"] = font_manager.FontProperties(fname=fp).get_name()
 plt.rcParams["axes.unicode_minus"] = False
 
-def add_boundaries_to_image(img_path, output_suffix="_구경계"):
-    """이미지에 구군 경계와 레이블 추가"""
-    if not os.path.exists(img_path):
-        print(f"  ✗ 파일 없음: {img_path}")
-        return False
-
-    try:
-        # 원본 이미지 로드
-        img = Image.open(img_path)
-        img_array = np.array(img)
-
-        # 새 figure 생성 (같은 크기)
-        dpi = 140
-        figsize = (img.width / dpi, img.height / dpi)
-        fig, ax = plt.subplots(figsize=figsize, dpi=dpi)
-
-        # 원본 이미지 표시
-        ax.imshow(img_array)
-
-        # 구군 경계 로드
-        districts = gpd.read_file(os.path.join(CLEAN, "districts_5179.gpkg"), engine="pyogrio")
-
-        # 이미지 좌표계를 지도 좌표계로 변환하기 위해
-        # 현재는 단순히 구군 경계만 오버레이
-        # (픽셀 좌표 <-> 지도 좌표 변환 필요 - 복잡함)
-        # 대신 다른 방식 사용
-
-        ax.axis("off")
-        fig.tight_layout(pad=0)
-
-        # 저장
-        output_path = img_path.replace(".png", f"{output_suffix}.png")
-        fig.savefig(output_path, dpi=dpi, bbox_inches="tight", pad_inches=0)
-        plt.close(fig)
-
-        print(f"  ✓ {os.path.basename(output_path)}")
-        return True
-    except Exception as e:
-        print(f"  ✗ 오류: {e}")
-        return False
-
-def create_boundary_overlay_maps():
-    """좌표계 기반으로 정확한 경계 오버레이 지도 생성"""
-    print("대구 전역 지도에 구군 경계·레이블 추가 중...")
+def create_daegu_accessibility_maps():
+    """접근성 지도 재생성 (구군 경계·레이블 포함)"""
+    print("접근성 지도 생성 중...")
 
     districts = gpd.read_file(os.path.join(CLEAN, "districts_5179.gpkg"), engine="pyogrio")
+    outdir = os.path.join(OUTROOT, "20260705")
 
-    # 처리할 지도 목록
-    maps_to_process = [
-        (os.path.join(OUTROOT, "20260705", "module4A_대구_2024_접근시간.png"), "접근성 (2024)", "lime"),
-        (os.path.join(OUTROOT, "20260705", "module4A_대구_2019_접근시간.png"), "접근성 (2019)", "lime"),
-        (os.path.join(OUTROOT, "20260705", "module4C_대구_2024_전류밀도.png"), "연결성 (2024)", "yellow"),
-        (os.path.join(OUTROOT, "20260705", "module4C_대구_2019_전류밀도.png"), "연결성 (2019)", "yellow"),
-    ]
-
-    for img_path, title, boundary_color in maps_to_process:
-        if not os.path.exists(img_path):
-            print(f"  ✗ {title}: 파일 없음")
-            continue
-
+    for year in ["2019", "2024"]:
         try:
-            # 이미지 로드
-            img = Image.open(img_path)
-            img_array = np.array(img)
+            gpkg_path = os.path.join(outdir, f"module4A_대구_{year}_접근시간.gpkg")
+            if not os.path.exists(gpkg_path):
+                print(f"  ✗ {year}: GPKG 없음")
+                continue
 
-            # Figure 생성 (이미지 크기와 동일)
-            dpi = 140
-            figsize = (img.width / dpi, img.height / dpi)
-            fig, ax = plt.subplots(figsize=figsize, dpi=dpi)
+            data = gpd.read_file(gpkg_path, engine="pyogrio")
 
-            # 원본 이미지 표시
-            ax.imshow(img_array)
+            fig, ax = plt.subplots(figsize=(12, 12), dpi=140)
+            data.plot(column="time_min", cmap="RdYlGn_r", ax=ax, markersize=3,
+                     legend=True, legend_kwds={"label":"녹지까지 도보(분)","shrink":0.6})
 
-            # 구군 경계 오버레이
-            try:
-                # 흰색 두꺼운 경계선
-                if "연결성" in title:
-                    districts.plot(ax=ax, facecolor="none", edgecolor="lime", linewidth=4, alpha=1.0)
-                    districts.plot(ax=ax, facecolor="none", edgecolor="black", linewidth=0.8, alpha=0.5)
-                else:
-                    districts.plot(ax=ax, facecolor="none", edgecolor="black", linewidth=2.5, alpha=0.9)
+            # 구군 경계
+            districts.plot(ax=ax, facecolor="none", edgecolor="black", linewidth=2, alpha=0.8)
 
-                # 구군 명 레이블
-                for idx, row in districts.iterrows():
-                    centroid = row.geometry.centroid
-                    if "연결성" in title:
-                        ax.text(centroid.x, centroid.y, row["구군"],
-                               fontsize=11, ha="center", va="center",
-                               color="black", fontweight="bold",
-                               bbox=dict(boxstyle="round,pad=0.3",
-                                        facecolor="yellow", alpha=0.85,
-                                        edgecolor="black", linewidth=1))
-                    else:
-                        ax.text(centroid.x, centroid.y, row["구군"],
-                               fontsize=11, ha="center", va="center",
-                               color="white", fontweight="bold",
-                               bbox=dict(boxstyle="round,pad=0.3",
-                                        facecolor="black", alpha=0.7,
-                                        edgecolor="white", linewidth=1))
-            except:
-                pass
+            # 구군 레이블
+            for idx, row in districts.iterrows():
+                centroid = row.geometry.centroid
+                ax.text(centroid.x, centroid.y, row["구군"],
+                       fontsize=11, ha="center", va="center",
+                       color="white", fontweight="bold",
+                       bbox=dict(boxstyle="round,pad=0.3",
+                                facecolor="black", alpha=0.7,
+                                edgecolor="white", linewidth=1))
 
+            ax.set_title(f"대구 녹지 접근성(도보시간) {year}", fontsize=14, fontweight="bold")
             ax.axis("off")
+            fig.tight_layout()
 
-            # 저장
-            output_path = img_path.replace(".png", "_구경계.png")
-            fig.savefig(output_path, dpi=dpi, bbox_inches="tight", pad_inches=0)
+            output_path = os.path.join(outdir, f"module4A_대구_{year}_접근시간_구경계.png")
+            fig.savefig(output_path, dpi=140, bbox_inches="tight", pad_inches=0.1)
             plt.close(fig)
 
-            print(f"  ✓ {title}: {os.path.basename(output_path)}")
+            print(f"  ✓ {year}: {os.path.basename(output_path)}")
         except Exception as e:
-            print(f"  ✗ {title}: {e}")
+            print(f"  ✗ {year}: {e}")
+
+def create_daegu_connectivity_maps():
+    """연결성 지도 재생성 (구군 경계·레이블 포함)"""
+    print("연결성 지도 생성 중...")
+
+    districts = gpd.read_file(os.path.join(CLEAN, "districts_5179.gpkg"), engine="pyogrio")
+    outdir = os.path.join(OUTROOT, "20260705")
+
+    for year in ["2019", "2024"]:
+        try:
+            gpkg_path = os.path.join(outdir, f"module4C_대구_{year}_전류밀도.gpkg")
+            if not os.path.exists(gpkg_path):
+                print(f"  ✗ {year}: GPKG 없음")
+                continue
+
+            data = gpd.read_file(gpkg_path, engine="pyogrio")
+
+            fig, ax = plt.subplots(figsize=(12, 12), dpi=140)
+            if "current" in data.columns:
+                data.plot(column="current", cmap="magma", ax=ax, markersize=3,
+                         legend=True, legend_kwds={"label":"회로 전류밀도","shrink":0.6})
+            else:
+                data.plot(ax=ax, markersize=3, alpha=0.6)
+
+            # 구군 경계 (lime green)
+            districts.plot(ax=ax, facecolor="none", edgecolor="lime", linewidth=4, alpha=1.0)
+            districts.plot(ax=ax, facecolor="none", edgecolor="black", linewidth=0.8, alpha=0.5)
+
+            # 구군 레이블 (yellow background)
+            for idx, row in districts.iterrows():
+                centroid = row.geometry.centroid
+                ax.text(centroid.x, centroid.y, row["구군"],
+                       fontsize=11, ha="center", va="center",
+                       color="black", fontweight="bold",
+                       bbox=dict(boxstyle="round,pad=0.3",
+                                facecolor="yellow", alpha=0.85,
+                                edgecolor="black", linewidth=1))
+
+            ax.set_title(f"대구 생태계 연결성(회로밀도) {year}", fontsize=14, fontweight="bold")
+            ax.axis("off")
+            fig.tight_layout()
+
+            output_path = os.path.join(outdir, f"module4C_대구_{year}_전류밀도_구경계.png")
+            fig.savefig(output_path, dpi=140, bbox_inches="tight", pad_inches=0.1)
+            plt.close(fig)
+
+            print(f"  ✓ {year}: {os.path.basename(output_path)}")
+        except Exception as e:
+            print(f"  ✗ {year}: {e}")
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("분석 지도에 행정경계 추가")
+    print("대구 전역 분석 지도 생성 (구군 경계·레이블 포함)")
     print("=" * 60)
-    create_boundary_overlay_maps()
+    create_daegu_accessibility_maps()
+    create_daegu_connectivity_maps()
     print("=" * 60)
     print("완료!")

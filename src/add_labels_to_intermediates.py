@@ -9,6 +9,7 @@ import numpy as np
 import geopandas as gpd
 import matplotlib.pyplot as plt
 from matplotlib import font_manager
+from matplotlib.patheffects import withStroke
 from PIL import Image
 import rasterio
 
@@ -91,12 +92,10 @@ for idx, row in dist.iterrows():
 
     if in_panel:
         # 패널 내에서 표시 (가장자리 제약 없음)
-        ax.text(px, py, row["구군"],
-               fontsize=13, ha="center", va="center",
-               color="black",
-               bbox=dict(boxstyle="round,pad=0.25",
-                        facecolor="yellow", alpha=0.85,
-                        edgecolor="black", linewidth=0.7))
+        t = ax.text(px, py, row["구군"],
+                   fontsize=13, ha="center", va="center",
+                   color="white")
+        t.set_path_effects([withStroke(linewidth=2, foreground="black")])
 
 ax.set_xlim(0, img_w)
 ax.set_ylim(img_h, 0)

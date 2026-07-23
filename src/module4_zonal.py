@@ -20,6 +20,7 @@ from rasterio import features as rfeatures
 import matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib import font_manager
+from matplotlib.patheffects import withStroke
 
 PROJ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STAMP = "20260705"
@@ -124,12 +125,10 @@ def citymap_conn(arrs, transform, shape, dist):
         dist.boundary.plot(ax=ax, color="cyan", linewidth=0.7)
         for idx, row in dist.iterrows():
             centroid = row.geometry.centroid
-            ax.text(centroid.x, centroid.y, row["구군"],
-                   fontsize=15, ha="center", va="center",
-                   color="black",
-                   bbox=dict(boxstyle="round,pad=0.3",
-                            facecolor="yellow", alpha=0.85,
-                            edgecolor="black", linewidth=1))
+            t = ax.text(centroid.x, centroid.y, row["구군"],
+                       fontsize=15, ha="center", va="center",
+                       color="white")
+            t.set_path_effects([withStroke(linewidth=3, foreground="black")])
         ax.set_title(f"대구 녹지 연결성(전류밀도) {y}"); ax.set_xticks([]); ax.set_yticks([])
         fig.colorbar(im, ax=ax, shrink=0.6, label="전류밀도")
         fig.tight_layout(); fig.savefig(p(f"module4_대구_연결성_{y}.png"), dpi=140); plt.close(fig)
@@ -139,12 +138,10 @@ def citymap_conn(arrs, transform, shape, dist):
     dist.boundary.plot(ax=ax, color="black", linewidth=0.7)
     for idx, row in dist.iterrows():
         centroid = row.geometry.centroid
-        ax.text(centroid.x, centroid.y, row["구군"],
-               fontsize=15, ha="center", va="center",
-               color="black",
-               bbox=dict(boxstyle="round,pad=0.3",
-                        facecolor="yellow", alpha=0.85,
-                        edgecolor="black", linewidth=1))
+        t = ax.text(centroid.x, centroid.y, row["구군"],
+                   fontsize=15, ha="center", va="center",
+                   color="white")
+        t.set_path_effects([withStroke(linewidth=3, foreground="black")])
     ax.set_title("대구 연결성 변화 (2024-2019)\n파랑=증가, 빨강=감소"); ax.set_xticks([]); ax.set_yticks([])
     fig.colorbar(im, ax=ax, shrink=0.6, label="Δ전류밀도")
     fig.tight_layout(); fig.savefig(p("module4_대구_연결성_차이.png"), dpi=140); plt.close(fig)
@@ -160,12 +157,10 @@ def citymap_access(m, dist):
         dist.boundary.plot(ax=ax, color="black", linewidth=0.7)
         for idx, row in dist.iterrows():
             centroid = row.geometry.centroid
-            ax.text(centroid.x, centroid.y, row["구군"],
-                   fontsize=15, ha="center", va="center",
-                   color="white",
-                   bbox=dict(boxstyle="round,pad=0.3",
-                            facecolor="black", alpha=0.7,
-                            edgecolor="white", linewidth=1))
+            t = ax.text(centroid.x, centroid.y, row["구군"],
+                       fontsize=15, ha="center", va="center",
+                       color="white")
+            t.set_path_effects([withStroke(linewidth=3, foreground="black")])
         ax.set_title(f"대구 녹지 접근성(도보, 거주격자) {y}"); ax.set_xticks([]); ax.set_yticks([])
         fig.tight_layout(); fig.savefig(p(f"module4_대구_접근성_{y}.png"), dpi=140); plt.close(fig)
     gdf["dt"] = gdf["t24"] - gdf["t19"]; v = float(np.nanpercentile(np.abs(gdf["dt"].dropna()), 98)) or 1
@@ -175,12 +170,10 @@ def citymap_access(m, dist):
     dist.boundary.plot(ax=ax, color="black", linewidth=0.7)
     for idx, row in dist.iterrows():
         centroid = row.geometry.centroid
-        ax.text(centroid.x, centroid.y, row["구군"],
-               fontsize=15, ha="center", va="center",
-               color="white",
-               bbox=dict(boxstyle="round,pad=0.3",
-                        facecolor="black", alpha=0.7,
-                        edgecolor="white", linewidth=1))
+        t = ax.text(centroid.x, centroid.y, row["구군"],
+                   fontsize=15, ha="center", va="center",
+                   color="white")
+        t.set_path_effects([withStroke(linewidth=3, foreground="black")])
     ax.set_title("대구 접근성 변화 (2024-2019)\n파랑=개선(단축), 빨강=악화(증가)"); ax.set_xticks([]); ax.set_yticks([])
     fig.tight_layout(); fig.savefig(p("module4_대구_접근성_차이.png"), dpi=140); plt.close(fig)
     log("  ✓ 접근성 전역·차이맵")

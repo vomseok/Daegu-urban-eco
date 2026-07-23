@@ -21,9 +21,21 @@ DIST=os.path.join(PROJ,"data_clean","districts_5179.gpkg")
 ROAD=r"C:/Users/user/AppData/Local/Temp/claude/D--my-Data-GIS-Project-20260629----------/3dd1a3d4-23e4-4fa8-a518-c682997d53f4/scratchpad/roads/Z_KAIS_TL_SPRD_MANAGE_27000.shp"
 POP=r"D:/my Data/GIS/Data/Source/2_public D/(B100)국토통계_인구정보-총 인구 수(전체)-(격자) 100M_대구광역시_201904/vl_blk.shp"
 BAD={"대분류","중분류","소분류","세분류","유형","미분류"}
-fp=r"C:\Windows\Fonts\malgun.ttf"
-if os.path.exists(fp):
-    font_manager.fontManager.addfont(fp); plt.rcParams["font.family"]=font_manager.FontProperties(fname=fp).get_name()
+
+# 한글 폰트 설정 (Windows/Linux 모두 지원)
+import platform
+if platform.system() == "Windows":
+    fp = r"C:\Windows\Fonts\malgun.ttf"
+    if os.path.exists(fp):
+        font_manager.fontManager.addfont(fp)
+        plt.rcParams["font.family"] = font_manager.FontProperties(fname=fp).get_name()
+else:  # Linux/macOS
+    fp = "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc"
+    if os.path.exists(fp):
+        font_manager.fontManager.addfont(fp)
+        plt.rcParams["font.sans-serif"] = ["Noto Sans CJK KR", "Noto Sans CJK JP", "DejaVu Sans"]
+        plt.rcParams["font.family"] = "sans-serif"
+
 plt.rcParams["axes.unicode_minus"]=False
 
 with rasterio.open(GRID) as ds: transform=ds.transform; shape=ds.shape
@@ -58,6 +70,16 @@ def panel(ax,arr,title,cmap,vmin,vmax,lab,discrete=False):
     ax.set_facecolor("#eeeeee")
     im=ax.imshow(arr,cmap=cmap,extent=ext,origin="upper",vmin=vmin,vmax=vmax)
     dist.boundary.plot(ax=ax,color="black",linewidth=0.5)
+
+    # 구군 레이블 추가
+    for idx, row in dist.iterrows():
+        centroid = row.geometry.centroid
+        ax.text(centroid.x, centroid.y, row["구군"],
+               fontsize=9, ha="center", va="center",
+               color="white", bbox=dict(boxstyle="round,pad=0.2",
+                                       facecolor="black", alpha=0.6,
+                                       edgecolor="white", linewidth=0.5))
+
     ax.set_title(title,fontsize=13); ax.set_xticks([]); ax.set_yticks([])
     if not discrete: plt.colorbar(im,ax=ax,shrink=0.6,label=lab)
     return im

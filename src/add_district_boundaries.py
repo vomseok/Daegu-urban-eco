@@ -20,11 +20,17 @@ PROJ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CLEAN = os.path.join(PROJ, "data_clean")
 OUTROOT = os.path.join(PROJ, "outputs")
 
-# 한글 폰트 설정
-fp = r"C:\Windows\Fonts\malgun.ttf"
-if os.path.exists(fp):
-    font_manager.fontManager.addfont(fp)
-    plt.rcParams["font.family"] = font_manager.FontProperties(fname=fp).get_name()
+# 한글 폰트 설정 (Windows/Linux 모두 지원)
+font_candidates = [
+    r"C:\Windows\Fonts\malgun.ttf",  # Windows
+    "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc",  # Linux Noto
+    "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.otf",  # Linux Noto
+]
+for fp in font_candidates:
+    if os.path.exists(fp):
+        font_manager.fontManager.addfont(fp)
+        plt.rcParams["font.family"] = font_manager.FontProperties(fname=fp).get_name()
+        break
 plt.rcParams["axes.unicode_minus"] = False
 
 def create_daegu_accessibility_maps():

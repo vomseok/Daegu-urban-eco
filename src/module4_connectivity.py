@@ -203,7 +203,7 @@ def save_raster_png(arr, transform, base, title, gu=None):
         fig,ax=plt.subplots(figsize=(10,10))
         im=ax.imshow(a, cmap="magma", vmin=0, vmax=vmax)
 
-        # 구군 경계 오버레이
+        # 구군 경계 오버레이 (눈에 띄는 색상)
         if gu:
             try:
                 d=gpd.read_file(os.path.join(CLEAN,"districts_5179.gpkg"),engine="pyogrio")
@@ -211,13 +211,15 @@ def save_raster_png(arr, transform, base, title, gu=None):
                 bounds=rasterio.transform.array_bounds(arr.shape[0], arr.shape[1], transform)
                 window_geom=shapely.box(*bounds)
                 d_sub=d[d.geometry.intersects(window_geom)]
-                d_sub.plot(ax=ax, facecolor="none", edgecolor="white", linewidth=1.5, alpha=0.9)
-                # 구군 명 라벨
+                # 경계선: 노란색(lime) + 검은색 테두리 이중 효과
+                d_sub.plot(ax=ax, facecolor="none", edgecolor="lime", linewidth=3.0, alpha=1.0)
+                d_sub.plot(ax=ax, facecolor="none", edgecolor="black", linewidth=0.5, alpha=0.5)
+                # 구군 명 라벨 (밝은 배경)
                 for idx,row in d_sub.iterrows():
                     centroid=row.geometry.centroid
                     ax.text(centroid.x, centroid.y, row["구군"],
-                           fontsize=9, ha="center", va="center", color="white",
-                           bbox=dict(boxstyle="round,pad=0.2", facecolor="black", alpha=0.6, edgecolor="white"))
+                           fontsize=10, ha="center", va="center", color="black", fontweight="bold",
+                           bbox=dict(boxstyle="round,pad=0.3", facecolor="yellow", alpha=0.85, edgecolor="black", linewidth=1))
             except:
                 pass
 

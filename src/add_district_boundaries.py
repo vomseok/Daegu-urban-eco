@@ -7,7 +7,7 @@ GIS 데이터로부터 접근성, 연결성 지도를 재생성하되
 
 실행: python src/add_district_boundaries.py
 """
-import os, sys, io
+import os, sys, io, platform
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 import numpy as np
 import geopandas as gpd
@@ -21,16 +21,18 @@ CLEAN = os.path.join(PROJ, "data_clean")
 OUTROOT = os.path.join(PROJ, "outputs")
 
 # 한글 폰트 설정 (Windows/Linux 모두 지원)
-font_candidates = [
-    r"C:\Windows\Fonts\malgun.ttf",  # Windows
-    "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc",  # Linux Noto
-    "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.otf",  # Linux Noto
-]
-for fp in font_candidates:
-    if os.path.exists(fp):
-        font_manager.fontManager.addfont(fp)
-        plt.rcParams["font.family"] = font_manager.FontProperties(fname=fp).get_name()
-        break
+if platform.system() == "Windows":
+    font_path = r"C:\Windows\Fonts\malgun.ttf"
+    if os.path.exists(font_path):
+        font_manager.fontManager.addfont(font_path)
+        plt.rcParams["font.family"] = "Malgun Gothic"
+else:  # Linux/macOS
+    font_path = "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc"
+    if os.path.exists(font_path):
+        font_manager.fontManager.addfont(font_path)
+        plt.rcParams["font.sans-serif"] = ["Noto Sans CJK KR", "Noto Sans CJK JP", "DejaVu Sans"]
+        plt.rcParams["font.family"] = "sans-serif"
+
 plt.rcParams["axes.unicode_minus"] = False
 
 def create_daegu_accessibility_maps():
@@ -60,13 +62,13 @@ def create_daegu_accessibility_maps():
             for idx, row in districts.iterrows():
                 centroid = row.geometry.centroid
                 ax.text(centroid.x, centroid.y, row["구군"],
-                       fontsize=11, ha="center", va="center",
-                       color="white", fontweight="bold",
+                       fontsize=15, ha="center", va="center",
+                       color="white",
                        bbox=dict(boxstyle="round,pad=0.3",
                                 facecolor="black", alpha=0.7,
                                 edgecolor="white", linewidth=1))
 
-            ax.set_title(f"대구 녹지 접근성(도보시간) {year}", fontsize=14, fontweight="bold")
+            ax.set_title(f"대구 녹지 접근성(도보시간) {year}", fontsize=14)
             ax.axis("off")
             fig.tight_layout()
 
@@ -109,13 +111,13 @@ def create_daegu_connectivity_maps():
             for idx, row in districts.iterrows():
                 centroid = row.geometry.centroid
                 ax.text(centroid.x, centroid.y, row["구군"],
-                       fontsize=11, ha="center", va="center",
-                       color="black", fontweight="bold",
+                       fontsize=15, ha="center", va="center",
+                       color="black",
                        bbox=dict(boxstyle="round,pad=0.3",
                                 facecolor="yellow", alpha=0.85,
                                 edgecolor="black", linewidth=1))
 
-            ax.set_title(f"대구 생태계 연결성(회로밀도) {year}", fontsize=14, fontweight="bold")
+            ax.set_title(f"대구 생태계 연결성(회로밀도) {year}", fontsize=14)
             ax.axis("off")
             fig.tight_layout()
 

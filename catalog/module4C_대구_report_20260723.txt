@@ -1,0 +1,35 @@
+### 모듈4-C 녹지 연결성(회로이론)  2026-07-23  구=대구
+
+저항표: {'산림': 1.0, '수계·습지': 3.0, '초지·조성녹지': 2.0, '농경지': 8.0, '묘지': 12.0, '나지·유휴지': 25.0, '공동주택지': 50.0, '단독주택지': 45.0, '주거상업혼합지': 65.0, '상업업무지': 70.0, '공업지': 60.0, '공공용도지': 40.0, '특수지역': 80.0, '교통시설지': 100.0}
+
+[전역모드] TOP_K=10, MIN_CORE_HA=50
+
+[2019] 로드·창추출
+
+!!! 예외 중단:
+Traceback (most recent call last):
+  File "/home/user/Daegu-urban-eco/src/module4_connectivity.py", line 280, in <module>
+    main()
+  File "/home/user/Daegu-urban-eco/src/module4_connectivity.py", line 251, in main
+    sub, gu_poly = load_window(year, gu)
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/Daegu-urban-eco/src/module4_connectivity.py", line 76, in load_window
+    g = gpd.read_file(os.path.join(CLEAN, gpkg), engine="pyogrio", columns=[field, gufield])
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/dist-packages/geopandas/io/file.py", line 316, in _read_file
+    return _read_file_pyogrio(
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/dist-packages/geopandas/io/file.py", line 576, in _read_file_pyogrio
+    return pyogrio.read_dataframe(path_or_bytes, bbox=bbox, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/dist-packages/pyogrio/geopandas.py", line 382, in read_dataframe
+    result = read_func(
+             ^^^^^^^^^^
+  File "/usr/local/lib/python3.11/dist-packages/pyogrio/raw.py", line 200, in read
+    return ogr_read(
+           ^^^^^^^^^
+  File "pyogrio/_io.pyx", line 1708, in pyogrio._io.ogr_read
+  File "pyogrio/_io.pyx", line 290, in pyogrio._io.ogr_open
+pyogrio.errors.DataSourceError: /home/user/Daegu-urban-eco/data_clean/biotope_2019_5179.gpkg: No such file or directory
+
+[상태: 실패/중단]

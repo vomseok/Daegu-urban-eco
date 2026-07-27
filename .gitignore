@@ -23,8 +23,9 @@ outputs/*/*.tif
 outputs/*/*.png
 outputs/*/*.csv
 outputs/*/*.xlsx
-# 단, 종합 보고서는 추가
+# 단, 학술 보고서는 추가
 !outputs/*/종합분석보고서*.docx
+!outputs/*/녹지연결성접근성통합분석_가이드라인.docx
 
 # ── OS ──
 Thumbs.db

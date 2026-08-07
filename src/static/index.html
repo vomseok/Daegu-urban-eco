@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>그늘로 - 여름 그늘길 경로 안내</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 100%;
+            padding: 40px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .time-selector {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 8px;
+        }
+        .time-btn {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        .time-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+        .time-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        .chart {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .chart-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        .chart-bars {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+            justify-content: space-around;
+            height: 100px;
+        }
+        .bar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        .bar-fill {
+            width: 40px;
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px 4px 0 0;
+        }
+        .bar-label {
+            font-size: 12px;
+            color: #666;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .info-section {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+        .info-section.show {
+            display: block;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .info-item {
+            text-align: center;
+        }
+        .info-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .info-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #667eea;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            color: #667eea;
+            font-weight: 600;
+        }
+        .error {
+            display: none;
+            background: #fee;
+            color: #c33;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>☀️ 그늘로</h1>
+        <p class="subtitle">더운 여름, 그늘로 가다</p>
+
+        <div class="form-group">
+            <label>출발지</label>
+            <input type="text" id="start" placeholder="예: 대구역" value="대구역">
+        </div>
+
+        <div class="form-group">
+            <label>목적지</label>
+            <input type="text" id="end" placeholder="예: 동인동" value="동인동">
+        </div>
+
+        <div class="form-group">
+            <label>시간 선택</label>
+            <div class="time-selector">
+                <button class="time-btn" data-hour="9">09:00</button>
+                <button class="time-btn active" data-hour="12">12:00</button>
+                <button class="time-btn" data-hour="15">15:00</button>
+                <button class="time-btn" data-hour="18">18:00</button>
+            </div>
+        </div>
+
+        <div class="chart">
+            <div class="chart-title">📊 하루 그늘 예보</div>
+            <div class="chart-bars" id="chart-bars">
+                <!-- 차트가 여기 생성됨 -->
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn-primary" onclick="findRoute()">쾌적한 경로 찾기</button>
+        </div>
+
+        <div class="loading" id="loading">검색 중...</div>
+
+        <div class="error" id="error"></div>
+
+        <div class="info-section" id="result">
+            <h3 style="color: #333; margin-bottom: 15px;">✅ 경로를 찾았습니다!</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">거리</div>
+                    <div class="info-value" id="distance">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">소요시간</div>
+                    <div class="info-value" id="duration">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">그늘 점수</div>
+                    <div class="info-value" id="shade">-</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedHour = 12;
+
+        // 시간 버튼 선택
+        document.querySelectorAll('.time-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedHour = parseInt(btn.dataset.hour);
+                loadChart();
+            });
+        });
+
+        // 차트 로드
+        async function loadChart() {
+            try {
+                const response = await fetch('http://localhost:8000/api/shade-by-hour');
+                const data = await response.json();
+
+                const bars = document.getElementById('chart-bars');
+                bars.innerHTML = '';
+
+                data.shade_by_hour.forEach(item => {
+                    const height = (item.shade_score / 10) * 100;
+                    const bar = document.createElement('div');
+                    bar.className = 'bar';
+                    bar.innerHTML = `
+                        <div class="bar-fill" style="height: ${height}px;"></div>
+                        <div class="bar-label">${item.hour}:00</div>
+                    `;
+                    bars.appendChild(bar);
+                });
+            } catch (e) {
+                console.error('차트 로드 실패:', e);
+            }
+        }
+
+        // 경로 찾기
+        async function findRoute() {
+            const startInput = document.getElementById('start').value;
+            const endInput = document.getElementById('end').value;
+
+            if (!startInput || !endInput) {
+                showError('출발지와 목적지를 입력하세요');
+                return;
+            }
+
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('error').style.display = 'none';
+            document.getElementById('result').classList.remove('show');
+
+            try {
+                // 모의 시작/종료 좌표 (대구 중심)
+                const start = { lat: 35.8721, lng: 128.5953 };
+                const end = { lat: 35.8800, lng: 128.6000 };
+
+                const response = await fetch('http://localhost:8000/api/route', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        start: start,
+                        end: end,
+                        hour: selectedHour
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('distance').textContent =
+                        (data.distance / 1000).toFixed(1) + ' km';
+                    document.getElementById('duration').textContent =
+                        data.duration_min.toFixed(0) + '분';
+                    document.getElementById('shade').textContent =
+                        data.avg_shade_score.toFixed(0) + '점';
+                    document.getElementById('result').classList.add('show');
+                } else {
+                    showError('경로를 찾을 수 없습니다');
+                }
+            } catch (e) {
+                showError('서버 연결 실패: ' + e.message);
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        function showError(msg) {
+            const errorEl = document.getElementById('error');
+            errorEl.textContent = msg;
+            errorEl.style.display = 'block';
+        }
+
+        // 페이지 로드 시 차트 표시
+        loadChart();
+    </script>
+</body>
+</html>

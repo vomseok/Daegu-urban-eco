@@ -6,7 +6,7 @@ import os, sys
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from typing import List, Optional
 import geopandas as gpd
@@ -34,6 +34,17 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# ============================================================================
+# 홈 페이지 (웹 UI)
+# ============================================================================
+
+@app.get("/")
+async def get_home():
+    html_path = os.path.join(os.path.dirname(__file__), "static", "index.html")
+    if os.path.exists(html_path):
+        return FileResponse(html_path, media_type="text/html")
+    return {"message": "그늘로 API 서버"}
 
 # ============================================================================
 # 데이터 모델
@@ -276,11 +287,6 @@ def get_stats():
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-# 정적 파일 서빙 (웹 UI) - 모든 API 엔드포인트 정의 후에 마운트
-STATIC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
-if os.path.exists(STATIC_DIR):
-    app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")
 
 # ============================================================================
 # 시작

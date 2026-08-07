@@ -2,8 +2,7 @@
 r"""그늘길 경로 안내 앱 - FastAPI 백엔드.
 모바일 앱에 제공할 REST API 엔드포인트.
 """
-import os, sys, io
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+import os, sys
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware

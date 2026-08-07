@@ -14,8 +14,11 @@ WALK_MPS = 4500.0 / 60.0     # 4.5 km/h → m/분
 
 def main():
     t0 = time.time()
-    g = gpd.read_file(os.path.join(PROJ, "data_clean", "biotope_2019_5179.gpkg"),
-                      engine="pyogrio", columns=["SIG_KOR_NM"])
+    bbox_file = os.path.join(PROJ, "data_clean", "districts_5179.gpkg")
+    if not os.path.exists(bbox_file):
+        print(f"ERROR: {bbox_file} 없음", flush=True)
+        return
+    g = gpd.read_file(bbox_file, engine="pyogrio")
     b = g.total_bounds
     box = gpd.GeoSeries([shapely.geometry.box(*b)], crs=5179).to_crs(4326).total_bounds
     west, south, east, north = [float(x) for x in box]

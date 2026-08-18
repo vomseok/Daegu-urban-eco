@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>그늘로 - 여름 그늘길 경로 안내</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -189,6 +191,19 @@
             border-radius: 8px;
             margin-top: 15px;
         }
+        #map {
+            width: 100%;
+            height: 300px;
+            border-radius: 12px;
+            margin-top: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .map-info {
+            font-size: 12px;
+            color: #666;
+            margin-top: 10px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -248,10 +263,77 @@
                 </div>
             </div>
         </div>
+
+        <div id="map"></div>
+        <p class="map-info">🗺️ 지도에서 출발지와 목적지를 확인할 수 있습니다</p>
     </div>
 
     <script>
         let selectedHour = 12;
+        let map;
+        let startMarker, endMarker, routeLine;
+
+        // 지도 초기화
+        function initMap() {
+            if (map) return;
+            map = L.map('map').setView([35.8728, 128.5957], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19
+            }).addTo(map);
+        }
+
+        // 지도에 경로 표시
+        function updateMapWithRoute(routeData) {
+            if (!map) initMap();
+
+            // 기존 마커와 경로 제거
+            if (startMarker) map.removeLayer(startMarker);
+            if (endMarker) map.removeLayer(endMarker);
+            if (routeLine) map.removeLayer(routeLine);
+
+            const startLat = 35.8721, startLng = 128.5953;
+            const endLat = 35.8800, endLng = 128.6000;
+
+            // 출발지 마커
+            startMarker = L.circleMarker([startLat, startLng], {
+                radius: 8,
+                fillColor: '#4CAF50',
+                color: '#2E7D32',
+                weight: 2,
+                opacity: 1,
+                fillOpacity: 0.8
+            }).addTo(map).bindPopup('📍 출발지');
+
+            // 목적지 마커
+            endMarker = L.circleMarker([endLat, endLng], {
+                radius: 8,
+                fillColor: '#FF5722',
+                color: '#D84315',
+                weight: 2,
+                opacity: 1,
+                fillOpacity: 0.8
+            }).addTo(map).bindPopup('🎯 목적지');
+
+            // 경로 폴리라인
+            if (routeData.path && routeData.path.length > 0) {
+                const pathCoords = routeData.path.map(p => [p.lat, p.lng]);
+                routeLine = L.polyline(pathCoords, {
+                    color: '#667eea',
+                    weight: 4,
+                    opacity: 0.7,
+                    dashArray: '5, 5'
+                }).addTo(map);
+
+                // 지도 자동 줌
+                const group = new L.featureGroup([startMarker, endMarker, routeLine]);
+                map.fitBounds(group.getBounds().pad(0.1));
+            } else {
+                // 마커만 있을 때
+                const group = new L.featureGroup([startMarker, endMarker]);
+                map.fitBounds(group.getBounds().pad(0.2));
+            }
+        }
 
         // 시간 버튼 선택
         document.querySelectorAll('.time-btn').forEach(btn => {
@@ -326,8 +408,10 @@
                     document.getElementById('shade').textContent =
                         data.avg_shade_score.toFixed(0) + '점';
                     document.getElementById('result').classList.add('show');
+                    updateMapWithRoute(data);
                 } else {
                     showError('경로를 찾을 수 없습니다');
+                    initMap();
                 }
             } catch (e) {
                 showError('서버 연결 실패: ' + e.message);
@@ -342,8 +426,9 @@
             errorEl.style.display = 'block';
         }
 
-        // 페이지 로드 시 차트 표시
+        // 페이지 로드 시 차트와 지도 표시
         loadChart();
+        initMap();
     </script>
 </body>
 </html>

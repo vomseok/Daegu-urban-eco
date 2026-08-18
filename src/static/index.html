@@ -268,8 +268,8 @@
             <div class="logo">☀️ 그늘로</div>
             <div class="search-bar">
                 <div class="search-group">
-                    <input type="text" id="start" class="search-input start" placeholder="출발지 입력" value="대구역">
-                    <input type="text" id="end" class="search-input" placeholder="목적지 입력" value="동인동">
+                    <input type="text" id="start" class="search-input start" placeholder="출발지 입력" value="지점 A">
+                    <input type="text" id="end" class="search-input" placeholder="목적지 입력" value="지점 B">
                     <div class="time-selector">
                         <button type="button" class="time-btn" data-hour="9">9시</button>
                         <button type="button" class="time-btn active" data-hour="12">12시</button>
@@ -324,7 +324,7 @@
         // 지도 초기화
         function initMap() {
             if (map) return;
-            map = L.map('map').setView([35.8728, 128.5957], 13);
+            map = L.map('map').setView([29.6, 135.3], 10);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap contributors',
                 maxZoom: 19
@@ -340,8 +340,8 @@
             if (endMarker) map.removeLayer(endMarker);
             if (routeLine) map.removeLayer(routeLine);
 
-            const startLat = 35.8721, startLng = 128.5953;
-            const endLat = 35.8800, endLng = 128.6000;
+            const startLat = 29.543036, startLng = 135.176014;
+            const endLat = 29.670946, endLng = 135.442900;
 
             // 출발지 마커
             startMarker = L.circleMarker([startLat, startLng], {
@@ -436,9 +436,9 @@
             document.getElementById('result-panel').classList.add('show');
 
             try {
-                // 모의 시작/종료 좌표 (대구 중심)
-                const start = { lat: 35.8721, lng: 128.5953 };
-                const end = { lat: 35.8800, lng: 128.6000 };
+                // 테스트 경로 좌표
+                const start = { lat: 29.543036, lng: 135.176014 };
+                const end = { lat: 29.670946, lng: 135.442900 };
 
                 const response = await fetch('http://localhost:8000/api/route', {
                     method: 'POST',

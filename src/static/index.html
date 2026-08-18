@@ -355,7 +355,7 @@
                 bars.innerHTML = '';
 
                 data.shade_by_hour.forEach(item => {
-                    const height = (item.shade_score / 10) * 100;
+                    const height = Math.min(item.shade_score, 100);
                     const bar = document.createElement('div');
                     bar.className = 'bar';
                     bar.innerHTML = `

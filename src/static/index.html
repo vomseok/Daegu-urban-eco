@@ -61,19 +61,19 @@
         }
         .time-selector {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
             margin-top: 8px;
         }
         .time-btn {
-            padding: 12px;
+            padding: 10px 8px;
             border: 2px solid #e0e0e0;
             background: white;
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s;
-            font-size: 14px;
+            font-size: 12px;
         }
         .time-btn:hover {
             border-color: #667eea;
@@ -209,10 +209,10 @@
         <div class="form-group">
             <label>시간 선택</label>
             <div class="time-selector">
-                <button class="time-btn" data-hour="9">09:00</button>
-                <button class="time-btn active" data-hour="12">12:00</button>
-                <button class="time-btn" data-hour="15">15:00</button>
-                <button class="time-btn" data-hour="18">18:00</button>
+                <button type="button" class="time-btn" data-hour="9">09:00</button>
+                <button type="button" class="time-btn active" data-hour="12">12:00</button>
+                <button type="button" class="time-btn" data-hour="15">15:00</button>
+                <button type="button" class="time-btn" data-hour="18">18:00</button>
             </div>
         </div>
 

@@ -10,7 +10,8 @@ data_clean/biotope_*.gpkg
 data_clean/osm_walk_*.graphml
 # 그늘 앱 생성 데이터: create_sample_network.py, generate_sample_shade_data.py 등으로 재생성
 data_clean/sample_walk_network.*
-data_clean/shade_*.geojson
+# shade_score_roads_대구.geojson 은 데스크톱 테스트용으로 포함
+# data_clean/shade_*.geojson
 # (districts_5179.gpkg 는 소용량이라 포함)
 
 # ── 세션·개인·임시 파일 ──

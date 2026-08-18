@@ -345,41 +345,45 @@
 
             // 출발지 마커
             startMarker = L.circleMarker([startLat, startLng], {
-                radius: 8,
+                radius: 10,
                 fillColor: '#4CAF50',
                 color: '#2E7D32',
-                weight: 2,
+                weight: 3,
                 opacity: 1,
-                fillOpacity: 0.8
-            }).addTo(map).bindPopup('📍 출발지');
+                fillOpacity: 0.9
+            }).addTo(map).bindPopup('📍 출발지', {closeButton: false});
 
             // 목적지 마커
             endMarker = L.circleMarker([endLat, endLng], {
-                radius: 8,
+                radius: 10,
                 fillColor: '#FF5722',
                 color: '#D84315',
-                weight: 2,
+                weight: 3,
                 opacity: 1,
-                fillOpacity: 0.8
-            }).addTo(map).bindPopup('🎯 목적지');
+                fillOpacity: 0.9
+            }).addTo(map).bindPopup('🎯 목적지', {closeButton: false});
 
             // 경로 폴리라인
             if (routeData.path && routeData.path.length > 0) {
                 const pathCoords = routeData.path.map(p => [p.lat, p.lng]);
                 routeLine = L.polyline(pathCoords, {
                     color: '#667eea',
-                    weight: 4,
-                    opacity: 0.7,
-                    dashArray: '5, 5'
+                    weight: 5,
+                    opacity: 0.8,
+                    lineCap: 'round',
+                    lineJoin: 'round'
                 }).addTo(map);
 
-                // 지도 자동 줌
-                const group = new L.featureGroup([startMarker, endMarker, routeLine]);
-                map.fitBounds(group.getBounds().pad(0.1));
+                // 지도 자동 줌 (경로 포함)
+                const bounds = routeLine.getBounds();
+                map.fitBounds(bounds, {padding: [50, 50], maxZoom: 15});
             } else {
-                // 마커만 있을 때
-                const group = new L.featureGroup([startMarker, endMarker]);
-                map.fitBounds(group.getBounds().pad(0.2));
+                // 마커만 있을 때 - 대구 지도에서 두 지점 보이기
+                const bounds = L.latLngBounds([
+                    [startLat, startLng],
+                    [endLat, endLng]
+                ]);
+                map.fitBounds(bounds, {padding: [100, 100], maxZoom: 14});
             }
         }
 

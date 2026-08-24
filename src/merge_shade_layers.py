@@ -13,18 +13,56 @@ from solar_position import solar_position_simple, shadow_length, DAEGU_LAT, DAEG
 PROJ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def load_data():
-    """모든 그늘 데이터 로드"""
+    """모든 그늘 데이터 로드 (OSM + 도시생태현황도)"""
     print("[데이터 로드]", flush=True)
 
-    roads_path = os.path.join(PROJ, "data_clean", "sample_walk_network.geojson")
-    buildings_path = os.path.join(PROJ, "data_clean", "shade_buildings_대구.geojson")
-    trees_path = os.path.join(PROJ, "data_clean", "shade_trees_대구.geojson")
+    import osmnx as ox
 
-    roads = gpd.read_file(roads_path)
+    osm_walk_path = os.path.join(PROJ, "data_clean", "osm_walk_대구.graphml")
+    if os.path.exists(osm_walk_path):
+        print(f"  OSM 보행도로 로드 중...", flush=True)
+        G = ox.load_graphml(osm_walk_path)
+        G = ox.project_graph(G, to_crs="EPSG:5179")
+        edges_data = []
+        for u, v, key, data in G.edges(keys=True, data=True):
+            edges_data.append({
+                'geometry': data.get('geometry'),
+                'length': data.get('length', 0),
+                'u': u, 'v': v
+            })
+        roads = gpd.GeoDataFrame(edges_data, crs='EPSG:5179')
+    else:
+        raise FileNotFoundError(f"{osm_walk_path} 없음")
+
+    # 2. OSM 건물
+    buildings_path = os.path.join(PROJ, "data_clean", "osm_buildings_대구.gpkg")
     buildings = gpd.read_file(buildings_path)
-    trees = gpd.read_file(trees_path)
+    buildings['height'] = buildings.get('height', 10).fillna(10)
 
-    print(f"  도로: {len(roads)}, 건물: {len(buildings)}, 가로수: {len(trees)}", flush=True)
+    # 3. OSM 가로수 + 도시생태현황도 띠녹지 병합
+    osm_trees_path = os.path.join(PROJ, "data_clean", "osm_trees_대구.gpkg")
+    ribbon_path = os.path.join(PROJ, "data_clean", "ribbon_green_대구.gpkg")
+
+    osm_trees = gpd.read_file(osm_trees_path)
+    osm_trees['crown_width'] = osm_trees.get('crown:diameter', 15).fillna(15)
+    print(f"  OSM 가로수: {len(osm_trees)}개", flush=True)
+
+    trees_data = []
+    # OSM 가로수 추가
+    for idx, tree in osm_trees.iterrows():
+        trees_data.append({'geometry': tree.geometry, 'crown_width': tree.get('crown_width', 15)})
+
+    # 도시생태현황도 띠녹지 추가 (폴리곤 중심점으로 포인트화)
+    if os.path.exists(ribbon_path):
+        ribbon = gpd.read_file(ribbon_path)
+        for idx, row in ribbon.iterrows():
+            centroid = row.geometry.centroid
+            trees_data.append({'geometry': centroid, 'crown_width': 20})
+        print(f"  도시생태현황도 띠녹지: {len(ribbon)}개", flush=True)
+
+    trees = gpd.GeoDataFrame(trees_data, crs='EPSG:5179')
+
+    print(f"  도로: {len(roads)}, 건물: {len(buildings)}, 녹지: {len(trees)}", flush=True)
     return roads, buildings, trees
 
 def building_shade_on_road(road_geom, building_geom, building_height, hour):

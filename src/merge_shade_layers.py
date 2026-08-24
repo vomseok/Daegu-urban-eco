@@ -21,12 +21,24 @@ def load_data():
     osm_walk_path = os.path.join(PROJ, "data_clean", "osm_walk_대구.graphml")
     if os.path.exists(osm_walk_path):
         print(f"  OSM 보행도로 로드 중...", flush=True)
-        G = ox.load_graphml(osm_walk_path)
-        G = ox.project_graph(G, to_crs="EPSG:5179")
+        try:
+            G = ox.load_graphml(osm_walk_path)
+            G = ox.project_graph(G, to_crs="EPSG:5179")
+        except:
+            # graphml이 이미 EPSG:5179로 저장되어 있을 수 있음
+            G = ox.load_graphml(osm_walk_path)
+
         edges_data = []
         for u, v, key, data in G.edges(keys=True, data=True):
+            geom = data.get('geometry')
+            if geom is None:
+                # geometry가 없으면 노드로부터 생성
+                from shapely.geometry import LineString
+                u_node = G.nodes[u]
+                v_node = G.nodes[v]
+                geom = LineString([(u_node['x'], u_node['y']), (v_node['x'], v_node['y'])])
             edges_data.append({
-                'geometry': data.get('geometry'),
+                'geometry': geom,
                 'length': data.get('length', 0),
                 'u': u, 'v': v
             })

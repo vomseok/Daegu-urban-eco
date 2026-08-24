@@ -49,14 +49,20 @@ def load_data():
     # 2. OSM 건물
     buildings_path = os.path.join(PROJ, "data_clean", "osm_buildings_대구.gpkg")
     buildings = gpd.read_file(buildings_path)
-    buildings['height'] = buildings.get('height', 10).fillna(10)
+    if 'height' in buildings.columns:
+        buildings['height'] = buildings['height'].fillna(10)
+    else:
+        buildings['height'] = 10
 
     # 3. OSM 가로수 + 도시생태현황도 띠녹지 병합
     osm_trees_path = os.path.join(PROJ, "data_clean", "osm_trees_대구.gpkg")
     ribbon_path = os.path.join(PROJ, "data_clean", "ribbon_green_대구.gpkg")
 
     osm_trees = gpd.read_file(osm_trees_path)
-    osm_trees['crown_width'] = osm_trees.get('crown:diameter', 15).fillna(15)
+    if 'crown:diameter' in osm_trees.columns:
+        osm_trees['crown_width'] = osm_trees['crown:diameter'].fillna(15)
+    else:
+        osm_trees['crown_width'] = 15
     print(f"  OSM 가로수: {len(osm_trees)}개", flush=True)
 
     trees_data = []

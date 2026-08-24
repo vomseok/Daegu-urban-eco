@@ -264,15 +264,12 @@
 </head>
 <body>
     <div class="header">
-        <div style="background: #ffeaa7; padding: 8px; text-align: center; font-size: 12px; color: #d63031;">
-            ⚠️ 현재 테스트 모드: 샘플 데이터(일본 지역)로 작동 중입니다. 실제 대구 데이터는 별도 준비 필요합니다.
-        </div>
         <div class="header-content">
             <div class="logo">☀️ 그늘로</div>
             <div class="search-bar">
                 <div class="search-group">
-                    <input type="text" id="start" class="search-input start" placeholder="출발지 입력" value="지점 A">
-                    <input type="text" id="end" class="search-input" placeholder="목적지 입력" value="지점 B">
+                    <input type="text" id="start" class="search-input start" placeholder="출발지 입력" value="대구역">
+                    <input type="text" id="end" class="search-input" placeholder="목적지 입력" value="동인동">
                     <div class="time-selector">
                         <button type="button" class="time-btn" data-hour="9">9시</button>
                         <button type="button" class="time-btn active" data-hour="12">12시</button>
@@ -327,7 +324,7 @@
         // 지도 초기화
         function initMap() {
             if (map) return;
-            map = L.map('map').setView([29.6, 135.3], 10);
+            map = L.map('map').setView([35.87, 128.60], 12);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap contributors',
                 maxZoom: 19
@@ -343,8 +340,8 @@
             if (endMarker) map.removeLayer(endMarker);
             if (routeLine) map.removeLayer(routeLine);
 
-            const startLat = 29.543036, startLng = 135.176014;
-            const endLat = 29.670946, endLng = 135.442900;
+            const startLat = 35.87, startLng = 128.59;
+            const endLat = 35.88, endLng = 128.60;
 
             // 출발지 마커
             startMarker = L.circleMarker([startLat, startLng], {
@@ -439,9 +436,9 @@
             document.getElementById('result-panel').classList.add('show');
 
             try {
-                // 테스트 경로 좌표
-                const start = { lat: 29.543036, lng: 135.176014 };
-                const end = { lat: 29.670946, lng: 135.442900 };
+                // 테스트 경로 좌표 (대구역 → 동인동)
+                const start = { lat: 35.87, lng: 128.59 };
+                const end = { lat: 35.88, lng: 128.60 };
 
                 const response = await fetch('http://localhost:8000/api/route', {
                     method: 'POST',

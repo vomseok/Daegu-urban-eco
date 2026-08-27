@@ -324,7 +324,7 @@
         // 지도 초기화
         function initMap() {
             if (map) return;
-            map = L.map('map').setView([29.6, 135.3], 10);
+            map = L.map('map').setView([35.87, 128.60], 14);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap contributors',
                 maxZoom: 19
@@ -340,9 +340,9 @@
             if (endMarker) map.removeLayer(endMarker);
             if (routeLine) map.removeLayer(routeLine);
 
-            // 임시: 테스트 데이터 범위 내 좌표 사용
-            const startLat = 29.543036, startLng = 135.176014;
-            const endLat = 29.670946, endLng = 135.442900;
+            // 대구 좌표: 대구역 → 동인동
+            const startLat = 35.87, startLng = 128.59;
+            const endLat = 35.88, endLng = 128.60;
 
             // 출발지 마커
             startMarker = L.circleMarker([startLat, startLng], {

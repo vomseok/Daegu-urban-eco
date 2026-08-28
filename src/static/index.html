@@ -34,6 +34,17 @@
         .bar-label { position: absolute; bottom: -20px; left: 0; right: 0; font-size: 9px; text-align: center; color: #999; }
         .loading { text-align: center; color: #667eea; font-weight: 600; margin: 20px 0; }
         .error-msg { background: #fee; color: #c33; padding: 10px 12px; border-radius: 6px; margin-bottom: 12px; font-size: 13px; border-left: 4px solid #c33; }
+        .shade-bar { width: 100%; height: 10px; background: #e0e0e0; border-radius: 5px; margin: 8px 0; overflow: hidden; }
+        .shade-fill { height: 100%; background: linear-gradient(90deg, #4CAF50 0%, #FFA726 50%, #FF5722 100%); border-radius: 5px; }
+        .segment-list { margin-top: 16px; padding-top: 12px; border-top: 1px solid #eee; max-height: 200px; overflow-y: auto; }
+        .segment { padding: 8px 0; font-size: 12px; border-bottom: 1px solid #f5f5f5; }
+        .segment:last-child { border-bottom: none; }
+        .segment-dist { color: #667eea; font-weight: 600; }
+        .segment-shade { color: #999; }
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+        .info-card { background: #f5f5f5; padding: 10px; border-radius: 6px; text-align: center; }
+        .info-card .value { font-size: 18px; font-weight: 700; color: #667eea; }
+        .info-card .label { font-size: 11px; color: #999; margin-top: 4px; font-weight: 600; }
     </style>
 </head>
 <body>
@@ -61,24 +72,36 @@
             <div id="results" class="hidden">
                 <div class="result-header">✅ 경로를 찾았습니다!</div>
 
-                <div class="info-row">
-                    <div>
-                        <div class="info-label">거리</div>
-                        <div class="info-value" id="dist">-</div>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <div class="value" id="dist">-</div>
+                        <div class="label">거리</div>
                     </div>
-                    <div>
-                        <div class="info-label">시간</div>
-                        <div class="info-value" id="time">-</div>
+                    <div class="info-card">
+                        <div class="value" id="time">-</div>
+                        <div class="label">소요시간</div>
                     </div>
-                    <div>
-                        <div class="info-label">그늘</div>
-                        <div class="info-value" id="shade">-</div>
+                    <div class="info-card">
+                        <div class="value" id="shade">-</div>
+                        <div class="label">그늘점수</div>
+                    </div>
+                </div>
+
+                <div>
+                    <div style="font-size: 12px; color: #666; font-weight: 600; margin-bottom: 6px;">그늘 점수</div>
+                    <div class="shade-bar">
+                        <div class="shade-fill" id="shade-bar" style="width: 50%;"></div>
                     </div>
                 </div>
 
                 <div class="chart">
                     <div class="chart-title">📊 하루 그늘 예보</div>
                     <div class="bars" id="bars"></div>
+                </div>
+
+                <div class="segment-list" id="segments" style="display: none;">
+                    <div style="font-size: 13px; font-weight: 600; color: #333; margin-bottom: 10px;">📍 경로 세그먼트</div>
+                    <div id="segment-items"></div>
                 </div>
             </div>
         </div>
@@ -106,9 +129,27 @@
 
         // 결과 표시
         function showResults(data) {
+            const shadeScore = Math.round(data.avg_shade_score);
             document.getElementById('dist').textContent = (data.distance / 1000).toFixed(1) + ' km';
             document.getElementById('time').textContent = Math.round(data.duration_min) + '분';
-            document.getElementById('shade').textContent = Math.round(data.avg_shade_score) + '점';
+            document.getElementById('shade').textContent = shadeScore + '점';
+            document.getElementById('shade-bar').style.width = Math.min(shadeScore, 100) + '%';
+
+            // 경로 세그먼트 표시
+            if (data.path && data.path.length > 1) {
+                const segmentList = document.getElementById('segment-items');
+                segmentList.innerHTML = '';
+
+                for (let i = 0; i < data.path.length - 1; i++) {
+                    const dist = Math.round(data.distance / (data.path.length - 1)) + ' m';
+                    const seg = document.createElement('div');
+                    seg.className = 'segment';
+                    seg.innerHTML = `<div>구간 ${i + 1}: <span class="segment-dist">${dist}</span></div>`;
+                    segmentList.appendChild(seg);
+                }
+                document.getElementById('segments').style.display = 'block';
+            }
+
             document.getElementById('results').classList.remove('hidden');
         }
 

@@ -43,7 +43,11 @@ app.add_middleware(
 async def get_home():
     html_path = os.path.join(os.path.dirname(__file__), "static", "index.html")
     if os.path.exists(html_path):
-        return FileResponse(html_path, media_type="text/html")
+        response = FileResponse(html_path, media_type="text/html")
+        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+        return response
     return {"message": "그늘로 API 서버"}
 
 # ============================================================================
@@ -108,11 +112,6 @@ def load_network():
 # ============================================================================
 # 헬스 체크
 # ============================================================================
-
-@app.get("/")
-def read_root():
-    """헬스 체크"""
-    return {"status": "healthy", "service": "그늘로 API v0.1"}
 
 @app.get("/health")
 def health_check():

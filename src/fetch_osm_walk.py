@@ -14,14 +14,8 @@ WALK_MPS = 4500.0 / 60.0     # 4.5 km/h → m/분
 
 def main():
     t0 = time.time()
-    bbox_file = os.path.join(PROJ, "data_clean", "districts_5179.gpkg")
-    if not os.path.exists(bbox_file):
-        print(f"ERROR: {bbox_file} 없음", flush=True)
-        return
-    g = gpd.read_file(bbox_file, engine="pyogrio")
-    b = g.total_bounds
-    box = gpd.GeoSeries([shapely.geometry.box(*b)], crs=5179).to_crs(4326).total_bounds
-    west, south, east, north = [float(x) for x in box]
+    # 대구 좌표 (위경도)
+    west, south, east, north = 128.3505, 35.6032, 128.7647, 36.0191
     print(f"대구 bbox(4326): W{west:.4f} S{south:.4f} E{east:.4f} N{north:.4f}", flush=True)
     print("OSM walk network 다운로드 중... (Overpass)", flush=True)
     try:

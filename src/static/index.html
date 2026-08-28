@@ -7,593 +7,217 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            background: #f5f5f5;
-        }
-
-        .header {
-            background: white;
-            padding: 16px 20px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            z-index: 100;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .header-content {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .logo {
-            font-size: 24px;
-            font-weight: 700;
-            color: #667eea;
-            margin-bottom: 12px;
-        }
-
-        .search-bar {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .search-group {
-            flex: 1;
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            min-width: 300px;
-        }
-
-        .search-input {
-            flex: 1;
-            padding: 10px 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 6px;
-            font-size: 14px;
-            transition: border-color 0.3s;
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .time-selector {
-            display: flex;
-            gap: 6px;
-        }
-
-        .time-btn {
-            padding: 8px 12px;
-            border: 2px solid #e0e0e0;
-            background: white;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 12px;
-            transition: all 0.3s;
-        }
-
-        .time-btn:hover {
-            border-color: #667eea;
-            color: #667eea;
-        }
-
-        .time-btn.active {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
-        }
-
-        .search-btn {
-            padding: 10px 24px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
-            transition: all 0.3s;
-            white-space: nowrap;
-        }
-
-        .search-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-
-        .search-btn:active {
-            transform: translateY(0);
-        }
-
-        .main-content {
-            flex: 1;
-            display: flex;
-            gap: 16px;
-            overflow: hidden;
-            padding: 16px;
-        }
-
-        #map {
-            flex: 1;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            z-index: 1;
-        }
-
-        .result-panel {
-            width: 360px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            opacity: 0;
-            transform: translateX(20px);
-            pointer-events: none;
-            transition: opacity 0.3s, transform 0.3s;
-            z-index: 10;
-        }
-
-        .result-panel.show {
-            opacity: 1;
-            transform: translateX(0);
-            pointer-events: all;
-        }
-
-        .result-header {
-            padding: 16px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            font-weight: 700;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .result-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .result-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            background: #f9f9f9;
-            border-radius: 6px;
-        }
-
-        .result-label {
-            font-size: 12px;
-            color: #999;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .result-value {
-            font-size: 20px;
-            font-weight: 700;
-            color: #667eea;
-        }
-
-        .route-info {
-            display: flex;
-            gap: 16px;
-        }
-
-        .info-box {
-            flex: 1;
-            padding: 12px;
-            background: #f9f9f9;
-            border-radius: 6px;
-            text-align: center;
-        }
-
-        .info-value {
-            font-size: 22px;
-            font-weight: 700;
-            color: #667eea;
-        }
-
-        .info-label {
-            font-size: 11px;
-            color: #999;
-            margin-top: 4px;
-            font-weight: 600;
-        }
-
-        .shade-score-bar {
-            width: 100%;
-            height: 12px;
-            background: #e0e0e0;
-            border-radius: 6px;
-            overflow: hidden;
-            margin-top: 8px;
-        }
-
-        .shade-score-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #4CAF50 0%, #FFA726 50%, #FF5722 100%);
-            border-radius: 6px;
-            transition: width 0.3s;
-        }
-
-        .chart-section {
-            padding: 12px;
-            background: #f9f9f9;
-            border-radius: 6px;
-        }
-
-        .chart-title {
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: #333;
-            font-size: 13px;
-        }
-
-        .chart-bars {
-            display: flex;
-            gap: 4px;
-            align-items: flex-end;
-            height: 60px;
-        }
-
-        .bar {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2px;
-            flex: 1;
-            min-width: 0;
-        }
-
-        .bar-fill {
-            width: 100%;
-            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
-            border-radius: 2px 2px 0 0;
-        }
-
-        .bar-label {
-            font-size: 9px;
-            color: #999;
-            white-space: nowrap;
-        }
-
-        .loading {
-            display: none;
-            text-align: center;
-            color: #667eea;
-            font-weight: 600;
-            padding: 20px;
-        }
-
-        .error {
-            display: none;
-            background: #fee;
-            color: #c33;
-            padding: 12px 16px;
-            border-radius: 6px;
-            font-size: 13px;
-            margin: 0 16px 16px 16px;
-            border-left: 4px solid #c33;
-        }
-
-        .route-segments {
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .segment-item {
-            padding: 10px;
-            border-bottom: 1px solid #f0f0f0;
-            font-size: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .segment-item:last-child {
-            border-bottom: none;
-        }
-
-        .segment-label {
-            color: #666;
-        }
-
-        .segment-value {
-            font-weight: 600;
-            color: #333;
-        }
-
-        @media (max-width: 1024px) {
-            .main-content {
-                flex-direction: column-reverse;
-                gap: 0;
-            }
-
-            .result-panel {
-                width: 100%;
-                height: auto;
-                max-height: 50%;
-                border-radius: 12px 12px 0 0;
-            }
-
-            #map {
-                border-radius: 0;
-            }
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; height: 100vh; display: flex; flex-direction: column; background: #fff; }
+        .header { background: white; padding: 16px 20px; border-bottom: 1px solid #ddd; }
+        .logo { font-size: 24px; font-weight: 700; color: #667eea; margin-bottom: 8px; }
+        .search-area { display: flex; gap: 10px; align-items: center; }
+        input, button { padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+        input { flex: 1; }
+        button { background: #667eea; color: white; border: none; cursor: pointer; font-weight: 600; min-width: 100px; }
+        button:hover { background: #5568d3; }
+        .time-btns { display: flex; gap: 8px; }
+        .time-btn { padding: 8px 12px; border: 1px solid #ddd; background: white; cursor: pointer; font-size: 12px; font-weight: 600; }
+        .time-btn.active { background: #667eea; color: white; border-color: #667eea; }
+        .container { display: flex; gap: 16px; flex: 1; padding: 16px; overflow: hidden; }
+        #map { flex: 1; border-radius: 8px; background: #e0e6f6; }
+        .panel { width: 340px; background: white; border-radius: 8px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow-y: auto; }
+        .hidden { display: none !important; }
+        .result-header { font-size: 16px; font-weight: 700; color: #333; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid #667eea; }
+        .info-row { display: flex; justify-content: space-between; margin-bottom: 12px; padding: 12px; background: #f5f5f5; border-radius: 6px; }
+        .info-label { font-size: 12px; color: #999; font-weight: 600; }
+        .info-value { font-size: 20px; font-weight: 700; color: #667eea; }
+        .chart { margin-top: 16px; padding-top: 16px; border-top: 1px solid #eee; }
+        .chart-title { font-size: 13px; font-weight: 600; color: #333; margin-bottom: 10px; }
+        .bars { display: flex; gap: 3px; align-items: flex-end; height: 60px; }
+        .bar { flex: 1; background: linear-gradient(180deg, #667eea 0%, #764ba2 100%); border-radius: 2px 2px 0 0; position: relative; }
+        .bar-label { position: absolute; bottom: -20px; left: 0; right: 0; font-size: 9px; text-align: center; color: #999; }
+        .loading { text-align: center; color: #667eea; font-weight: 600; margin: 20px 0; }
+        .error-msg { background: #fee; color: #c33; padding: 10px 12px; border-radius: 6px; margin-bottom: 12px; font-size: 13px; border-left: 4px solid #c33; }
     </style>
 </head>
 <body>
     <div class="header">
-        <div class="header-content">
-            <div class="logo">☀️ 그늘로</div>
-            <div class="search-bar">
-                <div class="search-group">
-                    <input type="text" id="start" class="search-input" placeholder="출발지 입력" value="대구역">
-                    <input type="text" id="end" class="search-input" placeholder="목적지 입력" value="동인동">
-                </div>
-                <div class="time-selector">
-                    <button type="button" class="time-btn" data-hour="9">9시</button>
-                    <button type="button" class="time-btn active" data-hour="12">12시</button>
-                    <button type="button" class="time-btn" data-hour="15">15시</button>
-                    <button type="button" class="time-btn" data-hour="18">18시</button>
-                </div>
-                <button class="search-btn" onclick="findRoute()">경로 찾기</button>
+        <div class="logo">☀️ 그늘로</div>
+        <div class="search-area">
+            <input type="text" id="start" placeholder="출발지" value="대구역">
+            <input type="text" id="end" placeholder="목적지" value="동인동">
+            <div class="time-btns">
+                <button type="button" class="time-btn" data-hour="9">9시</button>
+                <button type="button" class="time-btn active" data-hour="12">12시</button>
+                <button type="button" class="time-btn" data-hour="15">15시</button>
+                <button type="button" class="time-btn" data-hour="18">18시</button>
             </div>
+            <button onclick="searchRoute()">경로 찾기</button>
         </div>
     </div>
 
-    <div class="main-content">
+    <div class="container">
         <div id="map"></div>
+        <div class="panel">
+            <div id="loading" class="loading hidden">검색 중...</div>
+            <div id="error" class="error-msg hidden"></div>
 
-        <div class="result-panel" id="result-panel">
-            <div class="result-header">✅ 경로를 찾았습니다!</div>
+            <div id="results" class="hidden">
+                <div class="result-header">✅ 경로를 찾았습니다!</div>
 
-            <div class="result-content">
-                <div class="error" id="error"></div>
-                <div class="loading" id="loading">검색 중...</div>
-
-                <div id="route-results" style="display: none;">
-                    <div class="route-info">
-                        <div class="info-box">
-                            <div class="info-value" id="distance">-</div>
-                            <div class="info-label">거리</div>
-                        </div>
-                        <div class="info-box">
-                            <div class="info-value" id="duration">-</div>
-                            <div class="info-label">소요시간</div>
-                        </div>
-                        <div class="info-box">
-                            <div class="info-value" id="shade">-</div>
-                            <div class="info-label">그늘 점수</div>
-                        </div>
-                    </div>
-
+                <div class="info-row">
                     <div>
-                        <div style="font-size: 12px; color: #999; margin-bottom: 6px; font-weight: 600;">그늘 점수</div>
-                        <div class="shade-score-bar">
-                            <div class="shade-score-fill" id="shade-bar"></div>
-                        </div>
+                        <div class="info-label">거리</div>
+                        <div class="info-value" id="dist">-</div>
                     </div>
+                    <div>
+                        <div class="info-label">시간</div>
+                        <div class="info-value" id="time">-</div>
+                    </div>
+                    <div>
+                        <div class="info-label">그늘</div>
+                        <div class="info-value" id="shade">-</div>
+                    </div>
+                </div>
 
-                    <div class="chart-section">
-                        <div class="chart-title">📊 하루 그늘 예보</div>
-                        <div class="chart-bars" id="chart-bars"></div>
-                    </div>
+                <div class="chart">
+                    <div class="chart-title">📊 하루 그늘 예보</div>
+                    <div class="bars" id="bars"></div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        let selectedHour = 12;
-        let map;
-        let startMarker, endMarker, routeLine;
-        let currentRouteData = null;
+        let map, selectedHour = 12, routeLine, startMarker, endMarker;
 
+        // 지도 초기화
         function initMap() {
             if (map) return;
             map = L.map('map').setView([35.8756, 128.5953], 13);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors',
+                attribution: '© OpenStreetMap',
                 maxZoom: 19
             }).addTo(map);
         }
 
-        function clearMapLayers() {
-            if (startMarker) {
-                map.removeLayer(startMarker);
-                startMarker = null;
-            }
-            if (endMarker) {
-                map.removeLayer(endMarker);
-                endMarker = null;
-            }
-            if (routeLine) {
-                map.removeLayer(routeLine);
-                routeLine = null;
-            }
+        // 지도 정리
+        function clearMap() {
+            if (routeLine) map.removeLayer(routeLine);
+            if (startMarker) map.removeLayer(startMarker);
+            if (endMarker) map.removeLayer(endMarker);
         }
 
-        function displayRoute(routeData) {
-            clearMapLayers();
+        // 결과 표시
+        function showResults(data) {
+            document.getElementById('dist').textContent = (data.distance / 1000).toFixed(1) + ' km';
+            document.getElementById('time').textContent = Math.round(data.duration_min) + '분';
+            document.getElementById('shade').textContent = Math.round(data.avg_shade_score) + '점';
+            document.getElementById('results').classList.remove('hidden');
+        }
 
-            if (!routeData.path || routeData.path.length === 0) {
-                console.error('No path data in response');
-                return;
-            }
+        // 지도에 경로 표시
+        function drawRoute(data) {
+            clearMap();
+            if (!data.path || data.path.length === 0) return;
 
-            const pathCoords = routeData.path.map(p => [p.lat, p.lng]);
-            console.log('Drawing path with', pathCoords.length, 'points');
+            const coords = data.path.map(p => [p.lat, p.lng]);
 
-            // Draw polyline
-            routeLine = L.polyline(pathCoords, {
+            // 경로선
+            routeLine = L.polyline(coords, {
                 color: '#667eea',
                 weight: 5,
-                opacity: 0.8,
-                lineCap: 'round',
-                lineJoin: 'round'
+                opacity: 0.8
             }).addTo(map);
 
-            // Add start marker
-            const startPoint = pathCoords[0];
-            startMarker = L.circleMarker(startPoint, {
-                radius: 12,
+            // 출발지 마커
+            startMarker = L.circleMarker(coords[0], {
+                radius: 10,
                 fillColor: '#4CAF50',
                 color: '#2E7D32',
-                weight: 3,
-                opacity: 1,
-                fillOpacity: 0.9
-            }).addTo(map).bindPopup('📍 출발지', { closeButton: false });
+                weight: 2,
+                fillOpacity: 0.8
+            }).addTo(map).bindPopup('출발지');
 
-            // Add end marker
-            const endPoint = pathCoords[pathCoords.length - 1];
-            endMarker = L.circleMarker(endPoint, {
-                radius: 12,
+            // 도착지 마커
+            endMarker = L.circleMarker(coords[coords.length - 1], {
+                radius: 10,
                 fillColor: '#FF5722',
                 color: '#D84315',
-                weight: 3,
-                opacity: 1,
-                fillOpacity: 0.9
-            }).addTo(map).bindPopup('🎯 목적지', { closeButton: false });
+                weight: 2,
+                fillOpacity: 0.8
+            }).addTo(map).bindPopup('도착지');
 
-            // Fit map to route with proper padding
-            const bounds = L.latLngBounds(pathCoords);
-            map.fitBounds(bounds, { padding: [80, 80], maxZoom: 15, animate: true });
-
-            console.log('Route displayed successfully');
+            // 맞추기
+            const bounds = L.latLngBounds(coords);
+            map.fitBounds(bounds, { padding: [80, 80] });
         }
 
-        function showError(msg) {
-            const errorEl = document.getElementById('error');
-            errorEl.textContent = msg;
-            errorEl.style.display = 'block';
-            document.getElementById('route-results').style.display = 'none';
-        }
+        // 경로 검색
+        async function searchRoute() {
+            const start = document.getElementById('start').value.trim();
+            const end = document.getElementById('end').value.trim();
 
-        function hideError() {
-            const errorEl = document.getElementById('error');
-            errorEl.style.display = 'none';
-        }
-
-        async function findRoute() {
-            console.log('=== Finding route ===');
-            const startInput = document.getElementById('start').value.trim();
-            const endInput = document.getElementById('end').value.trim();
-
-            if (!startInput || !endInput) {
+            if (!start || !end) {
                 showError('출발지와 목적지를 입력하세요');
                 return;
             }
 
-            // Show loading and result panel
-            document.getElementById('loading').style.display = 'block';
-            document.getElementById('route-results').style.display = 'none';
-            hideError();
-            document.getElementById('result-panel').classList.add('show');
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('error').classList.add('hidden');
+            document.getElementById('results').classList.add('hidden');
 
             try {
-                // Hardcoded test coordinates for Daegu
-                const start = { lat: 35.87, lng: 128.59 };
-                const end = { lat: 35.88, lng: 128.60 };
-
-                console.log('Requesting route:', { start, end, hour: selectedHour });
-
                 const response = await fetch('/api/route', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        start: start,
-                        end: end,
+                        start: { lat: 35.87, lng: 128.59 },
+                        end: { lat: 35.88, lng: 128.60 },
                         hour: selectedHour
                     })
                 });
 
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-
+                if (!response.ok) throw new Error('서버 오류');
                 const data = await response.json();
-                console.log('API Response:', data);
 
                 if (data.success) {
-                    currentRouteData = data;
-                    hideError();
-
-                    // Update results
-                    document.getElementById('distance').textContent = (data.distance / 1000).toFixed(1) + ' km';
-                    document.getElementById('duration').textContent = Math.round(data.duration_min) + '분';
-                    const shadeScore = Math.round(data.avg_shade_score);
-                    document.getElementById('shade').textContent = shadeScore + '점';
-                    document.getElementById('shade-bar').style.width = Math.min(shadeScore, 100) + '%';
-
-                    // Display route on map
-                    displayRoute(data);
-
-                    // Show results
-                    document.getElementById('route-results').style.display = 'block';
-
-                    console.log('Route display complete');
+                    drawRoute(data);
+                    showResults(data);
                 } else {
                     showError(data.message || '경로를 찾을 수 없습니다');
-                    initMap();
                 }
             } catch (e) {
-                console.error('Error:', e);
-                showError('서버 연결 실패: ' + e.message);
-                initMap();
+                showError('연결 실패: ' + e.message);
             } finally {
-                document.getElementById('loading').style.display = 'none';
+                document.getElementById('loading').classList.add('hidden');
             }
         }
 
+        // 차트 로드
         async function loadChart() {
             try {
                 const response = await fetch('/api/shade-by-hour');
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
                 const data = await response.json();
-                const bars = document.getElementById('chart-bars');
-                bars.innerHTML = '';
+                const barsEl = document.getElementById('bars');
+                barsEl.innerHTML = '';
 
                 data.shade_by_hour.forEach(item => {
-                    const height = Math.max(item.shade_score, 5);
+                    const h = Math.max(item.shade_score * 0.6, 5);
                     const bar = document.createElement('div');
                     bar.className = 'bar';
-                    bar.innerHTML = `
-                        <div class="bar-fill" style="height: ${height}px;"></div>
-                        <div class="bar-label">${item.hour}</div>
-                    `;
-                    bars.appendChild(bar);
+                    bar.style.height = h + 'px';
+                    bar.innerHTML = '<span class="bar-label">' + item.hour + '</span>';
+                    barsEl.appendChild(bar);
                 });
             } catch (e) {
-                console.error('Chart load error:', e);
+                console.error('Chart error:', e);
             }
         }
 
-        // Event listeners
+        function showError(msg) {
+            const errEl = document.getElementById('error');
+            errEl.textContent = msg;
+            errEl.classList.remove('hidden');
+        }
+
+        // 이벤트
         document.querySelectorAll('.time-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
@@ -603,7 +227,7 @@
             });
         });
 
-        // Initialize on page load
+        // 초기화
         window.addEventListener('load', () => {
             initMap();
             loadChart();

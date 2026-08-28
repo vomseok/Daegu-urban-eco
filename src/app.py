@@ -157,9 +157,9 @@ def get_route(req: RouteRequest):
 
         # EPSG:4326 (위경도) → EPSG:5179 (대구 투영좌표)
         from pyproj import Transformer
-        transformer = Transformer.from_crs("EPSG:4326", "EPSG:5179")
-        start_x, start_y = transformer.transform(req.start.lat, req.start.lng)
-        end_x, end_y = transformer.transform(req.end.lat, req.end.lng)
+        transformer = Transformer.from_crs("EPSG:4326", "EPSG:5179", always_xy=True)
+        start_x, start_y = transformer.transform(req.start.lng, req.start.lat)
+        end_x, end_y = transformer.transform(req.end.lng, req.end.lat)
 
         start_pos = (start_x, start_y)
         end_pos = (end_x, end_y)
@@ -178,14 +178,14 @@ def get_route(req: RouteRequest):
             )
 
         # 경로를 위경도로 변환
-        transformer_inv = Transformer.from_crs("EPSG:5179", "EPSG:4326")
+        transformer_inv = Transformer.from_crs("EPSG:5179", "EPSG:4326", always_xy=True)
         path_locations = []
         total_distance = 0
         total_shade = 0
         edge_count = 0
 
         for i, node in enumerate(path_nodes):
-            lat, lng = transformer_inv.transform(node[0], node[1])
+            lng, lat = transformer_inv.transform(node[0], node[1])
             path_locations.append(Location(lat=lat, lng=lng))
 
             # 엣지 정보 수집

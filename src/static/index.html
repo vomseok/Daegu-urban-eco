@@ -378,29 +378,11 @@
                     lineJoin: 'round'
                 }).addTo(map);
 
-                // 지도 자동 줌 (경로 포함)
-                const bounds = routeLine.getBounds();
-                console.log('Line bounds:', bounds);
-                console.log('Bounds southwest:', bounds.getSouthWest());
-                console.log('Bounds northeast:', bounds.getNorthEast());
-
-                // 명시적으로 bounds 설정 (좌표 순서 확보)
-                const sw = bounds.getSouthWest();
-                const ne = bounds.getNorthEast();
-                const safeBounds = L.latLngBounds([
-                    [Math.min(sw.lat, ne.lat), Math.min(sw.lng, ne.lng)],
-                    [Math.max(sw.lat, ne.lat), Math.max(sw.lng, ne.lng)]
-                ]);
-                console.log('Safe bounds:', safeBounds);
-
-                map.fitBounds(safeBounds, {padding: [50, 50], maxZoom: 15});
+                // 대구 중심 좌표로 줌 설정 (경로 표시 후)
+                map.setView([35.875, 128.595], 13);
             } else {
-                // 마커만 있을 때 - 대구 지도에서 두 지점 보이기
-                const bounds = L.latLngBounds([
-                    [startLat, startLng],
-                    [endLat, endLng]
-                ]);
-                map.fitBounds(bounds, {padding: [100, 100], maxZoom: 14});
+                // 마커만 있을 때 - 대구 중심 기본 줌
+                map.setView([35.875, 128.595], 13);
             }
         }
 

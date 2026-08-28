@@ -12,22 +12,25 @@
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             height: 100vh;
             display: flex;
             flex-direction: column;
+            background: #f5f5f5;
         }
 
         .header {
             background: white;
-            padding: 12px 20px;
+            padding: 16px 20px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             z-index: 100;
+            border-bottom: 1px solid #e0e0e0;
         }
 
         .header-content {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
@@ -42,6 +45,7 @@
             display: flex;
             gap: 8px;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         .search-group {
@@ -49,6 +53,7 @@
             display: flex;
             gap: 8px;
             align-items: center;
+            min-width: 300px;
         }
 
         .search-input {
@@ -63,10 +68,6 @@
         .search-input:focus {
             outline: none;
             border-color: #667eea;
-        }
-
-        .search-input.start::before {
-            content: '📍 ';
         }
 
         .time-selector {
@@ -97,7 +98,7 @@
         }
 
         .search-btn {
-            padding: 10px 20px;
+            padding: 10px 24px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
@@ -114,35 +115,50 @@
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
         }
 
+        .search-btn:active {
+            transform: translateY(0);
+        }
+
         .main-content {
             flex: 1;
             display: flex;
+            gap: 16px;
             overflow: hidden;
+            padding: 16px;
         }
 
         #map {
             flex: 1;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             z-index: 1;
         }
 
         .result-panel {
-            width: 320px;
+            width: 360px;
             background: white;
-            box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
-            overflow-y: auto;
-            padding: 20px;
-            display: none;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
             flex-direction: column;
-            gap: 15px;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateX(20px);
+            pointer-events: none;
+            transition: opacity 0.3s, transform 0.3s;
             z-index: 10;
         }
 
         .result-panel.show {
-            display: flex;
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: all;
         }
 
         .result-header {
-            color: #333;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
             font-weight: 700;
             font-size: 16px;
             display: flex;
@@ -150,10 +166,22 @@
             gap: 8px;
         }
 
-        .result-item {
+        .result-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 16px;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: #f9f9f9;
+            border-radius: 6px;
         }
 
         .result-label {
@@ -164,64 +192,92 @@
         }
 
         .result-value {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: 700;
             color: #667eea;
         }
 
+        .route-info {
+            display: flex;
+            gap: 16px;
+        }
+
+        .info-box {
+            flex: 1;
+            padding: 12px;
+            background: #f9f9f9;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .info-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .info-label {
+            font-size: 11px;
+            color: #999;
+            margin-top: 4px;
+            font-weight: 600;
+        }
+
         .shade-score-bar {
             width: 100%;
-            height: 8px;
+            height: 12px;
             background: #e0e0e0;
-            border-radius: 4px;
-            margin-top: 4px;
+            border-radius: 6px;
             overflow: hidden;
+            margin-top: 8px;
         }
 
         .shade-score-fill {
             height: 100%;
-            background: linear-gradient(90deg, #FFB74D 0%, #FFA726 100%);
-            border-radius: 4px;
+            background: linear-gradient(90deg, #4CAF50 0%, #FFA726 50%, #FF5722 100%);
+            border-radius: 6px;
+            transition: width 0.3s;
         }
 
         .chart-section {
-            border-top: 1px solid #e0e0e0;
-            padding-top: 15px;
+            padding: 12px;
+            background: #f9f9f9;
+            border-radius: 6px;
         }
 
         .chart-title {
             font-weight: 600;
             margin-bottom: 12px;
             color: #333;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .chart-bars {
             display: flex;
-            gap: 6px;
+            gap: 4px;
             align-items: flex-end;
-            justify-content: space-between;
-            height: 80px;
+            height: 60px;
         }
 
         .bar {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
+            gap: 2px;
             flex: 1;
+            min-width: 0;
         }
 
         .bar-fill {
             width: 100%;
-            max-width: 24px;
             background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
             border-radius: 2px 2px 0 0;
         }
 
         .bar-label {
-            font-size: 10px;
+            font-size: 9px;
             color: #999;
+            white-space: nowrap;
         }
 
         .loading {
@@ -229,35 +285,62 @@
             text-align: center;
             color: #667eea;
             font-weight: 600;
+            padding: 20px;
         }
 
         .error {
             display: none;
             background: #fee;
             color: #c33;
-            padding: 12px;
+            padding: 12px 16px;
             border-radius: 6px;
             font-size: 13px;
+            margin: 0 16px 16px 16px;
+            border-left: 4px solid #c33;
         }
 
-        @media (max-width: 768px) {
+        .route-segments {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .segment-item {
+            padding: 10px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .segment-item:last-child {
+            border-bottom: none;
+        }
+
+        .segment-label {
+            color: #666;
+        }
+
+        .segment-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                flex-direction: column-reverse;
+                gap: 0;
+            }
+
             .result-panel {
                 width: 100%;
-                height: 40%;
+                height: auto;
+                max-height: 50%;
                 border-radius: 12px 12px 0 0;
-                position: absolute;
-                bottom: 0;
-                left: 0;
-                right: 0;
             }
 
-            .search-bar {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .time-selector {
-                width: 100%;
+            #map {
+                border-radius: 0;
             }
         }
     </style>
@@ -268,14 +351,14 @@
             <div class="logo">☀️ 그늘로</div>
             <div class="search-bar">
                 <div class="search-group">
-                    <input type="text" id="start" class="search-input start" placeholder="출발지 입력" value="대구역">
+                    <input type="text" id="start" class="search-input" placeholder="출발지 입력" value="대구역">
                     <input type="text" id="end" class="search-input" placeholder="목적지 입력" value="동인동">
-                    <div class="time-selector">
-                        <button type="button" class="time-btn" data-hour="9">9시</button>
-                        <button type="button" class="time-btn active" data-hour="12">12시</button>
-                        <button type="button" class="time-btn" data-hour="15">15시</button>
-                        <button type="button" class="time-btn" data-hour="18">18시</button>
-                    </div>
+                </div>
+                <div class="time-selector">
+                    <button type="button" class="time-btn" data-hour="9">9시</button>
+                    <button type="button" class="time-btn active" data-hour="12">12시</button>
+                    <button type="button" class="time-btn" data-hour="15">15시</button>
+                    <button type="button" class="time-btn" data-hour="18">18시</button>
                 </div>
                 <button class="search-btn" onclick="findRoute()">경로 찾기</button>
             </div>
@@ -288,31 +371,39 @@
         <div class="result-panel" id="result-panel">
             <div class="result-header">✅ 경로를 찾았습니다!</div>
 
-            <div class="result-item">
-                <div class="result-label">거리</div>
-                <div class="result-value" id="distance">-</div>
-            </div>
+            <div class="result-content">
+                <div class="error" id="error"></div>
+                <div class="loading" id="loading">검색 중...</div>
 
-            <div class="result-item">
-                <div class="result-label">소요시간</div>
-                <div class="result-value" id="duration">-</div>
-            </div>
+                <div id="route-results" style="display: none;">
+                    <div class="route-info">
+                        <div class="info-box">
+                            <div class="info-value" id="distance">-</div>
+                            <div class="info-label">거리</div>
+                        </div>
+                        <div class="info-box">
+                            <div class="info-value" id="duration">-</div>
+                            <div class="info-label">소요시간</div>
+                        </div>
+                        <div class="info-box">
+                            <div class="info-value" id="shade">-</div>
+                            <div class="info-label">그늘 점수</div>
+                        </div>
+                    </div>
 
-            <div class="result-item">
-                <div class="result-label">그늘 점수</div>
-                <div class="result-value" id="shade">-</div>
-                <div class="shade-score-bar">
-                    <div class="shade-score-fill" id="shade-bar"></div>
+                    <div>
+                        <div style="font-size: 12px; color: #999; margin-bottom: 6px; font-weight: 600;">그늘 점수</div>
+                        <div class="shade-score-bar">
+                            <div class="shade-score-fill" id="shade-bar"></div>
+                        </div>
+                    </div>
+
+                    <div class="chart-section">
+                        <div class="chart-title">📊 하루 그늘 예보</div>
+                        <div class="chart-bars" id="chart-bars"></div>
+                    </div>
                 </div>
             </div>
-
-            <div class="chart-section">
-                <div class="chart-title">📊 하루 그늘 예보</div>
-                <div class="chart-bars" id="chart-bars"></div>
-            </div>
-
-            <div class="error" id="error"></div>
-            <div class="loading" id="loading">검색 중...</div>
         </div>
     </div>
 
@@ -320,131 +411,115 @@
         let selectedHour = 12;
         let map;
         let startMarker, endMarker, routeLine;
+        let currentRouteData = null;
 
-        // 지도 초기화
         function initMap() {
             if (map) return;
-            map = L.map('map').setView([35.87, 128.60], 14);
+            map = L.map('map').setView([35.8756, 128.5953], 13);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap contributors',
                 maxZoom: 19
             }).addTo(map);
         }
 
-        // 지도에 경로 표시
-        function updateMapWithRoute(routeData) {
-            console.log('updateMapWithRoute called with:', routeData);
-            if (!map) initMap();
+        function clearMapLayers() {
+            if (startMarker) {
+                map.removeLayer(startMarker);
+                startMarker = null;
+            }
+            if (endMarker) {
+                map.removeLayer(endMarker);
+                endMarker = null;
+            }
+            if (routeLine) {
+                map.removeLayer(routeLine);
+                routeLine = null;
+            }
+        }
 
-            // 기존 마커와 경로 제거
-            if (startMarker) map.removeLayer(startMarker);
-            if (endMarker) map.removeLayer(endMarker);
-            if (routeLine) map.removeLayer(routeLine);
+        function displayRoute(routeData) {
+            clearMapLayers();
 
-            // 대구 좌표: 대구역 → 동인동
-            const startLat = 35.87, startLng = 128.59;
-            const endLat = 35.88, endLng = 128.60;
-            console.log('Start:', startLat, startLng, 'End:', endLat, endLng);
+            if (!routeData.path || routeData.path.length === 0) {
+                console.error('No path data in response');
+                return;
+            }
 
-            // 출발지 마커
-            startMarker = L.circleMarker([startLat, startLng], {
-                radius: 10,
+            const pathCoords = routeData.path.map(p => [p.lat, p.lng]);
+            console.log('Drawing path with', pathCoords.length, 'points');
+
+            // Draw polyline
+            routeLine = L.polyline(pathCoords, {
+                color: '#667eea',
+                weight: 5,
+                opacity: 0.8,
+                lineCap: 'round',
+                lineJoin: 'round'
+            }).addTo(map);
+
+            // Add start marker
+            const startPoint = pathCoords[0];
+            startMarker = L.circleMarker(startPoint, {
+                radius: 12,
                 fillColor: '#4CAF50',
                 color: '#2E7D32',
                 weight: 3,
                 opacity: 1,
                 fillOpacity: 0.9
-            }).addTo(map).bindPopup('📍 출발지', {closeButton: false});
+            }).addTo(map).bindPopup('📍 출발지', { closeButton: false });
 
-            // 목적지 마커
-            endMarker = L.circleMarker([endLat, endLng], {
-                radius: 10,
+            // Add end marker
+            const endPoint = pathCoords[pathCoords.length - 1];
+            endMarker = L.circleMarker(endPoint, {
+                radius: 12,
                 fillColor: '#FF5722',
                 color: '#D84315',
                 weight: 3,
                 opacity: 1,
                 fillOpacity: 0.9
-            }).addTo(map).bindPopup('🎯 목적지', {closeButton: false});
+            }).addTo(map).bindPopup('🎯 목적지', { closeButton: false });
 
-            // 경로 폴리라인
-            if (routeData.path && routeData.path.length > 0) {
-                const pathCoords = routeData.path.map(p => [p.lat, p.lng]);
-                console.log('Path coords:', pathCoords);
-                routeLine = L.polyline(pathCoords, {
-                    color: '#667eea',
-                    weight: 5,
-                    opacity: 0.8,
-                    lineCap: 'round',
-                    lineJoin: 'round'
-                }).addTo(map);
+            // Fit map to route with proper padding
+            const bounds = L.latLngBounds(pathCoords);
+            map.fitBounds(bounds, { padding: [80, 80], maxZoom: 15, animate: true });
 
-                // 대구 중심 좌표로 줌 설정 (경로 표시 후)
-                map.setView([35.875, 128.595], 13);
-            } else {
-                // 마커만 있을 때 - 대구 중심 기본 줌
-                map.setView([35.875, 128.595], 13);
-            }
+            console.log('Route displayed successfully');
         }
 
-        // 시간 버튼 선택
-        document.querySelectorAll('.time-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                selectedHour = parseInt(btn.dataset.hour);
-                loadChart();
-            });
-        });
-
-        // 차트 로드
-        async function loadChart() {
-            try {
-                const response = await fetch('/api/shade-by-hour');
-
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-
-                const data = await response.json();
-
-                const bars = document.getElementById('chart-bars');
-                bars.innerHTML = '';
-
-                data.shade_by_hour.forEach(item => {
-                    const height = Math.min(item.shade_score, 100);
-                    const bar = document.createElement('div');
-                    bar.className = 'bar';
-                    bar.innerHTML = `
-                        <div class="bar-fill" style="height: ${height}px;"></div>
-                        <div class="bar-label">${item.hour}:00</div>
-                    `;
-                    bars.appendChild(bar);
-                });
-            } catch (e) {
-                console.error('차트 로드 실패:', e);
-            }
+        function showError(msg) {
+            const errorEl = document.getElementById('error');
+            errorEl.textContent = msg;
+            errorEl.style.display = 'block';
+            document.getElementById('route-results').style.display = 'none';
         }
 
-        // 경로 찾기
+        function hideError() {
+            const errorEl = document.getElementById('error');
+            errorEl.style.display = 'none';
+        }
+
         async function findRoute() {
-            alert('경로 찾기 클릭됨!');
-            console.log('=== findRoute 시작 ===');
-            const startInput = document.getElementById('start').value;
-            const endInput = document.getElementById('end').value;
+            console.log('=== Finding route ===');
+            const startInput = document.getElementById('start').value.trim();
+            const endInput = document.getElementById('end').value.trim();
 
             if (!startInput || !endInput) {
                 showError('출발지와 목적지를 입력하세요');
                 return;
             }
 
+            // Show loading and result panel
             document.getElementById('loading').style.display = 'block';
-            document.getElementById('error').style.display = 'none';
+            document.getElementById('route-results').style.display = 'none';
+            hideError();
             document.getElementById('result-panel').classList.add('show');
 
             try {
-                // 테스트 경로 좌표 (대구역 → 동인동)
+                // Hardcoded test coordinates for Daegu
                 const start = { lat: 35.87, lng: 128.59 };
                 const end = { lat: 35.88, lng: 128.60 };
+
+                console.log('Requesting route:', { start, end, hour: selectedHour });
 
                 const response = await fetch('/api/route', {
                     method: 'POST',
@@ -464,16 +539,23 @@
                 console.log('API Response:', data);
 
                 if (data.success) {
-                    document.getElementById('distance').textContent =
-                        (data.distance / 1000).toFixed(1) + ' km';
-                    document.getElementById('duration').textContent =
-                        data.duration_min.toFixed(0) + '분';
-                    const shadeScore = data.avg_shade_score.toFixed(0);
+                    currentRouteData = data;
+                    hideError();
+
+                    // Update results
+                    document.getElementById('distance').textContent = (data.distance / 1000).toFixed(1) + ' km';
+                    document.getElementById('duration').textContent = Math.round(data.duration_min) + '분';
+                    const shadeScore = Math.round(data.avg_shade_score);
                     document.getElementById('shade').textContent = shadeScore + '점';
-                    document.getElementById('shade-bar').style.width = shadeScore + '%';
-                    document.getElementById('result-panel').classList.add('show');
-                    console.log('Calling updateMapWithRoute...');
-                    updateMapWithRoute(data);
+                    document.getElementById('shade-bar').style.width = Math.min(shadeScore, 100) + '%';
+
+                    // Display route on map
+                    displayRoute(data);
+
+                    // Show results
+                    document.getElementById('route-results').style.display = 'block';
+
+                    console.log('Route display complete');
                 } else {
                     showError(data.message || '경로를 찾을 수 없습니다');
                     initMap();
@@ -487,15 +569,45 @@
             }
         }
 
-        function showError(msg) {
-            const errorEl = document.getElementById('error');
-            errorEl.textContent = msg;
-            errorEl.style.display = 'block';
+        async function loadChart() {
+            try {
+                const response = await fetch('/api/shade-by-hour');
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                const data = await response.json();
+                const bars = document.getElementById('chart-bars');
+                bars.innerHTML = '';
+
+                data.shade_by_hour.forEach(item => {
+                    const height = Math.max(item.shade_score, 5);
+                    const bar = document.createElement('div');
+                    bar.className = 'bar';
+                    bar.innerHTML = `
+                        <div class="bar-fill" style="height: ${height}px;"></div>
+                        <div class="bar-label">${item.hour}</div>
+                    `;
+                    bars.appendChild(bar);
+                });
+            } catch (e) {
+                console.error('Chart load error:', e);
+            }
         }
 
-        // 페이지 로드 시 차트와 지도 표시
-        loadChart();
-        initMap();
+        // Event listeners
+        document.querySelectorAll('.time-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedHour = parseInt(btn.dataset.hour);
+                loadChart();
+            });
+        });
+
+        // Initialize on page load
+        window.addEventListener('load', () => {
+            initMap();
+            loadChart();
+        });
     </script>
 </body>
 </html>

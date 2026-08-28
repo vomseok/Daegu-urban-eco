@@ -401,7 +401,12 @@
         // 차트 로드
         async function loadChart() {
             try {
-                const response = await fetch('http://localhost:8000/api/shade-by-hour');
+                const response = await fetch('/api/shade-by-hour');
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
                 const data = await response.json();
 
                 const bars = document.getElementById('chart-bars');
@@ -441,7 +446,7 @@
                 const start = { lat: 35.87, lng: 128.59 };
                 const end = { lat: 35.88, lng: 128.60 };
 
-                const response = await fetch('http://localhost:8000/api/route', {
+                const response = await fetch('/api/route', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -450,6 +455,10 @@
                         hour: selectedHour
                     })
                 });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
 
                 const data = await response.json();
 
@@ -464,11 +473,13 @@
                     document.getElementById('result-panel').classList.add('show');
                     updateMapWithRoute(data);
                 } else {
-                    showError('경로를 찾을 수 없습니다');
+                    showError(data.message || '경로를 찾을 수 없습니다');
                     initMap();
                 }
             } catch (e) {
+                console.error('Error:', e);
                 showError('서버 연결 실패: ' + e.message);
+                initMap();
             } finally {
                 document.getElementById('loading').style.display = 'none';
             }

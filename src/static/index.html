@@ -3,114 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>그늘로 - 여름 그늘길 경로 안내</title>
+    <title>그늘로 - 여름 그늘길</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; height: 100vh; display: flex; flex-direction: column; background: #fff; }
-        .header { background: white; padding: 16px 20px; border-bottom: 1px solid #ddd; }
-        .logo { font-size: 24px; font-weight: 700; color: #667eea; margin-bottom: 8px; }
-        .search-area { display: flex; gap: 10px; align-items: center; }
-        input, button { padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
-        input { flex: 1; }
-        button { background: #667eea; color: white; border: none; cursor: pointer; font-weight: 600; min-width: 100px; }
+        html, body { width: 100%; height: 100%; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+
+        .wrapper { display: flex; height: 100vh; flex-direction: column; }
+
+        .top { background: white; padding: 20px; border-bottom: 1px solid #ddd; }
+        .title { font-size: 28px; font-weight: 700; color: #667eea; margin-bottom: 15px; }
+
+        .controls { display: flex; gap: 10px; align-items: center; }
+        input { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
+        button { padding: 12px 24px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 14px; }
         button:hover { background: #5568d3; }
-        .time-btns { display: flex; gap: 8px; }
-        .time-btn { padding: 8px 12px; border: 1px solid #ddd; background: white; cursor: pointer; font-size: 12px; font-weight: 600; }
-        .time-btn.active { background: #667eea; color: white; border-color: #667eea; }
-        .container { display: flex; gap: 16px; flex: 1; padding: 16px; overflow: hidden; }
-        #map { flex: 1; border-radius: 8px; background: #e0e6f6; }
-        .panel { width: 340px; background: white; border-radius: 8px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow-y: auto; }
-        .hidden { display: none !important; }
-        .result-header { font-size: 16px; font-weight: 700; color: #333; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid #667eea; }
-        .info-row { display: flex; justify-content: space-between; margin-bottom: 12px; padding: 12px; background: #f5f5f5; border-radius: 6px; }
-        .info-label { font-size: 12px; color: #999; font-weight: 600; }
-        .info-value { font-size: 20px; font-weight: 700; color: #667eea; }
-        .chart { margin-top: 16px; padding-top: 16px; border-top: 1px solid #eee; }
-        .chart-title { font-size: 13px; font-weight: 600; color: #333; margin-bottom: 10px; }
-        .bars { display: flex; gap: 3px; align-items: flex-end; height: 60px; }
-        .bar { flex: 1; background: linear-gradient(180deg, #667eea 0%, #764ba2 100%); border-radius: 2px 2px 0 0; position: relative; }
-        .bar-label { position: absolute; bottom: -20px; left: 0; right: 0; font-size: 9px; text-align: center; color: #999; }
-        .loading { text-align: center; color: #667eea; font-weight: 600; margin: 20px 0; }
-        .error-msg { background: #fee; color: #c33; padding: 10px 12px; border-radius: 6px; margin-bottom: 12px; font-size: 13px; border-left: 4px solid #c33; }
-        .shade-bar { width: 100%; height: 10px; background: #e0e0e0; border-radius: 5px; margin: 8px 0; overflow: hidden; }
-        .shade-fill { height: 100%; background: linear-gradient(90deg, #4CAF50 0%, #FFA726 50%, #FF5722 100%); border-radius: 5px; }
-        .segment-list { margin-top: 16px; padding-top: 12px; border-top: 1px solid #eee; max-height: 200px; overflow-y: auto; }
-        .segment { padding: 8px 0; font-size: 12px; border-bottom: 1px solid #f5f5f5; }
-        .segment:last-child { border-bottom: none; }
-        .segment-dist { color: #667eea; font-weight: 600; }
-        .segment-shade { color: #999; }
-        .info-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 16px; }
-        .info-card { background: #f5f5f5; padding: 10px; border-radius: 6px; text-align: center; }
-        .info-card .value { font-size: 18px; font-weight: 700; color: #667eea; }
-        .info-card .label { font-size: 11px; color: #999; margin-top: 4px; font-weight: 600; }
+
+        .middle { display: flex; flex: 1; gap: 0; overflow: hidden; }
+        #map { flex: 1; background: #e0e6f6; }
+
+        .right { width: 340px; background: white; padding: 20px; overflow-y: auto; border-left: 1px solid #ddd; display: none; }
+        .right.show { display: block; }
+
+        .result-title { font-size: 18px; font-weight: 700; color: #333; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #667eea; }
+
+        .stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .stat-box { background: #f5f5f5; padding: 12px; border-radius: 6px; text-align: center; }
+        .stat-val { font-size: 22px; font-weight: 700; color: #667eea; }
+        .stat-lbl { font-size: 11px; color: #999; margin-top: 4px; text-transform: uppercase; }
+
+        .shade-bar-container { margin-bottom: 20px; }
+        .shade-bar-label { font-size: 12px; color: #666; font-weight: 600; margin-bottom: 6px; }
+        .shade-bar { width: 100%; height: 12px; background: #e0e0e0; border-radius: 6px; overflow: hidden; }
+        .shade-bar-fill { height: 100%; background: linear-gradient(90deg, #4CAF50 0%, #FFA726 50%, #FF5722 100%); }
+
+        .chart-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; }
+        .chart-title { font-size: 14px; font-weight: 600; color: #333; margin-bottom: 12px; }
+        .chart-bars { display: flex; gap: 4px; align-items: flex-end; height: 70px; }
+        .chart-bar { flex: 1; background: linear-gradient(180deg, #667eea 0%, #764ba2 100%); border-radius: 2px 2px 0 0; min-height: 4px; }
+        .chart-bar-label { font-size: 9px; color: #999; text-align: center; margin-top: 4px; }
+
+        .loading { color: #667eea; text-align: center; padding: 20px; display: none; }
+        .loading.show { display: block; }
+
+        .error { background: #fee; color: #c33; padding: 12px; border-radius: 6px; margin-bottom: 16px; font-size: 13px; border-left: 4px solid #c33; display: none; }
+        .error.show { display: block; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="logo">☀️ 그늘로</div>
-        <div class="search-area">
-            <input type="text" id="start" placeholder="출발지" value="대구역">
-            <input type="text" id="end" placeholder="목적지" value="동인동">
-            <div class="time-btns">
-                <button type="button" class="time-btn" data-hour="9">9시</button>
-                <button type="button" class="time-btn active" data-hour="12">12시</button>
-                <button type="button" class="time-btn" data-hour="15">15시</button>
-                <button type="button" class="time-btn" data-hour="18">18시</button>
+    <div class="wrapper">
+        <div class="top">
+            <div class="title">☀️ 그늘로</div>
+            <div class="controls">
+                <input type="text" id="start" placeholder="출발지" value="대구역">
+                <input type="text" id="end" placeholder="목적지" value="동인동">
+                <select id="hour" style="padding: 12px; border: 1px solid #ddd; border-radius: 4px;">
+                    <option value="9">9시</option>
+                    <option value="12" selected>12시</option>
+                    <option value="15">15시</option>
+                    <option value="18">18시</option>
+                </select>
+                <button onclick="clickSearch()">경로 찾기</button>
             </div>
-            <button onclick="searchRoute()">경로 찾기</button>
         </div>
-    </div>
 
-    <div class="container">
-        <div id="map"></div>
-        <div class="panel">
-            <div id="loading" class="loading hidden">검색 중...</div>
-            <div id="error" class="error-msg hidden"></div>
+        <div class="middle">
+            <div id="map"></div>
+            <div class="right" id="panel">
+                <div class="error" id="error"></div>
+                <div class="loading" id="loading">검색 중...</div>
+                <div id="content" style="display: none;">
+                    <div class="result-title">✅ 경로를 찾았습니다!</div>
 
-            <div id="results" class="hidden">
-                <div class="result-header">✅ 경로를 찾았습니다!</div>
-
-                <div class="info-grid">
-                    <div class="info-card">
-                        <div class="value" id="dist">-</div>
-                        <div class="label">거리</div>
+                    <div class="stats">
+                        <div class="stat-box">
+                            <div class="stat-val" id="dist">-</div>
+                            <div class="stat-lbl">거리</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-val" id="time">-</div>
+                            <div class="stat-lbl">소요시간</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-val" id="shade">-</div>
+                            <div class="stat-lbl">그늘점수</div>
+                        </div>
                     </div>
-                    <div class="info-card">
-                        <div class="value" id="time">-</div>
-                        <div class="label">소요시간</div>
-                    </div>
-                    <div class="info-card">
-                        <div class="value" id="shade">-</div>
-                        <div class="label">그늘점수</div>
-                    </div>
-                </div>
 
-                <div>
-                    <div style="font-size: 12px; color: #666; font-weight: 600; margin-bottom: 6px;">그늘 점수</div>
-                    <div class="shade-bar">
-                        <div class="shade-fill" id="shade-bar" style="width: 50%;"></div>
+                    <div class="shade-bar-container">
+                        <div class="shade-bar-label">그늘 점수</div>
+                        <div class="shade-bar">
+                            <div class="shade-bar-fill" id="shadeFill"></div>
+                        </div>
                     </div>
-                </div>
 
-                <div class="chart">
-                    <div class="chart-title">📊 하루 그늘 예보</div>
-                    <div class="bars" id="bars"></div>
-                </div>
-
-                <div class="segment-list" id="segments" style="display: none;">
-                    <div style="font-size: 13px; font-weight: 600; color: #333; margin-bottom: 10px;">📍 경로 세그먼트</div>
-                    <div id="segment-items"></div>
+                    <div class="chart-section">
+                        <div class="chart-title">📊 하루 그늘 예보</div>
+                        <div class="chart-bars" id="chartBars"></div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        let map, selectedHour = 12, routeLine, startMarker, endMarker;
+        let map = null;
+        let routeLayer = null;
 
-        // 지도 초기화
         function initMap() {
             if (map) return;
             map = L.map('map').setView([35.8756, 128.5953], 13);
@@ -120,155 +121,130 @@
             }).addTo(map);
         }
 
-        // 지도 정리
-        function clearMap() {
-            if (routeLine) map.removeLayer(routeLine);
-            if (startMarker) map.removeLayer(startMarker);
-            if (endMarker) map.removeLayer(endMarker);
-        }
-
-        // 결과 표시
-        function showResults(data) {
-            const shadeScore = Math.round(data.avg_shade_score);
-            document.getElementById('dist').textContent = (data.distance / 1000).toFixed(1) + ' km';
-            document.getElementById('time').textContent = Math.round(data.duration_min) + '분';
-            document.getElementById('shade').textContent = shadeScore + '점';
-            document.getElementById('shade-bar').style.width = Math.min(shadeScore, 100) + '%';
-
-            // 경로 세그먼트 표시
-            if (data.path && data.path.length > 1) {
-                const segmentList = document.getElementById('segment-items');
-                segmentList.innerHTML = '';
-
-                for (let i = 0; i < data.path.length - 1; i++) {
-                    const dist = Math.round(data.distance / (data.path.length - 1)) + ' m';
-                    const seg = document.createElement('div');
-                    seg.className = 'segment';
-                    seg.innerHTML = `<div>구간 ${i + 1}: <span class="segment-dist">${dist}</span></div>`;
-                    segmentList.appendChild(seg);
-                }
-                document.getElementById('segments').style.display = 'block';
+        function clearRoute() {
+            if (routeLayer) {
+                map.removeLayer(routeLayer);
+                routeLayer = null;
             }
-
-            document.getElementById('results').classList.remove('hidden');
         }
 
-        // 지도에 경로 표시
-        function drawRoute(data) {
-            clearMap();
-            if (!data.path || data.path.length === 0) return;
+        function drawRoute(path) {
+            clearRoute();
+            if (!path || path.length === 0) return;
 
-            const coords = data.path.map(p => [p.lat, p.lng]);
+            const coords = path.map(p => [p.lat, p.lng]);
 
             // 경로선
-            routeLine = L.polyline(coords, {
+            routeLayer = L.polyline(coords, {
                 color: '#667eea',
                 weight: 5,
                 opacity: 0.8
             }).addTo(map);
 
-            // 출발지 마커
-            startMarker = L.circleMarker(coords[0], {
+            // 출발지
+            L.circleMarker(coords[0], {
                 radius: 10,
                 fillColor: '#4CAF50',
                 color: '#2E7D32',
                 weight: 2,
+                opacity: 1,
                 fillOpacity: 0.8
             }).addTo(map).bindPopup('출발지');
 
-            // 도착지 마커
-            endMarker = L.circleMarker(coords[coords.length - 1], {
+            // 도착지
+            L.circleMarker(coords[coords.length - 1], {
                 radius: 10,
                 fillColor: '#FF5722',
                 color: '#D84315',
                 weight: 2,
+                opacity: 1,
                 fillOpacity: 0.8
             }).addTo(map).bindPopup('도착지');
 
-            // 맞추기
+            // 줌
             const bounds = L.latLngBounds(coords);
             map.fitBounds(bounds, { padding: [80, 80] });
         }
 
-        // 경로 검색
-        async function searchRoute() {
-            const start = document.getElementById('start').value.trim();
-            const end = document.getElementById('end').value.trim();
+        async function clickSearch() {
+            const panel = document.getElementById('panel');
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const content = document.getElementById('content');
 
-            if (!start || !end) {
-                showError('출발지와 목적지를 입력하세요');
-                return;
-            }
-
-            document.getElementById('loading').classList.remove('hidden');
-            document.getElementById('error').classList.add('hidden');
-            document.getElementById('results').classList.add('hidden');
+            panel.classList.add('show');
+            loading.classList.add('show');
+            error.classList.remove('show');
+            content.style.display = 'none';
 
             try {
+                const hour = document.getElementById('hour').value;
                 const response = await fetch('/api/route', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         start: { lat: 35.87, lng: 128.59 },
                         end: { lat: 35.88, lng: 128.60 },
-                        hour: selectedHour
+                        hour: parseInt(hour)
                     })
                 });
 
-                if (!response.ok) throw new Error('서버 오류');
                 const data = await response.json();
 
-                if (data.success) {
-                    drawRoute(data);
-                    showResults(data);
-                } else {
-                    showError(data.message || '경로를 찾을 수 없습니다');
+                if (!data.success) {
+                    showError('경로를 찾을 수 없습니다');
+                    return;
                 }
+
+                // 지도
+                drawRoute(data.path);
+
+                // 정보
+                document.getElementById('dist').innerText = (data.distance / 1000).toFixed(1) + ' km';
+                document.getElementById('time').innerText = Math.round(data.duration_min) + '분';
+                const shadeVal = Math.round(data.avg_shade_score);
+                document.getElementById('shade').innerText = shadeVal + '점';
+                document.getElementById('shadeFill').style.width = Math.min(shadeVal, 100) + '%';
+
+                content.style.display = 'block';
             } catch (e) {
-                showError('연결 실패: ' + e.message);
+                showError('오류: ' + e.message);
             } finally {
-                document.getElementById('loading').classList.add('hidden');
+                loading.classList.remove('show');
             }
         }
 
-        // 차트 로드
+        function showError(msg) {
+            const error = document.getElementById('error');
+            error.innerText = msg;
+            error.classList.add('show');
+        }
+
         async function loadChart() {
             try {
                 const response = await fetch('/api/shade-by-hour');
                 const data = await response.json();
-                const barsEl = document.getElementById('bars');
-                barsEl.innerHTML = '';
+                const bars = document.getElementById('chartBars');
+                bars.innerHTML = '';
 
+                const maxShade = Math.max(...data.shade_by_hour.map(x => x.shade_score));
                 data.shade_by_hour.forEach(item => {
-                    const h = Math.max(item.shade_score * 0.6, 5);
-                    const bar = document.createElement('div');
-                    bar.className = 'bar';
-                    bar.style.height = h + 'px';
-                    bar.innerHTML = '<span class="bar-label">' + item.hour + '</span>';
-                    barsEl.appendChild(bar);
+                    const height = Math.max(4, (item.shade_score / maxShade) * 60);
+                    const barDiv = document.createElement('div');
+                    barDiv.style.display = 'flex';
+                    barDiv.style.flexDirection = 'column';
+                    barDiv.style.alignItems = 'center';
+                    barDiv.innerHTML = `
+                        <div class="chart-bar" style="height: ${height}px;"></div>
+                        <div class="chart-bar-label">${item.hour}</div>
+                    `;
+                    bars.appendChild(barDiv);
                 });
             } catch (e) {
                 console.error('Chart error:', e);
             }
         }
 
-        function showError(msg) {
-            const errEl = document.getElementById('error');
-            errEl.textContent = msg;
-            errEl.classList.remove('hidden');
-        }
-
-        // 이벤트
-        document.querySelectorAll('.time-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                selectedHour = parseInt(btn.dataset.hour);
-                loadChart();
-            });
-        });
-
-        // 초기화
         window.addEventListener('load', () => {
             initMap();
             loadChart();

@@ -333,6 +333,7 @@
 
         // 지도에 경로 표시
         function updateMapWithRoute(routeData) {
+            console.log('updateMapWithRoute called with:', routeData);
             if (!map) initMap();
 
             // 기존 마커와 경로 제거
@@ -343,6 +344,7 @@
             // 대구 좌표: 대구역 → 동인동
             const startLat = 35.87, startLng = 128.59;
             const endLat = 35.88, endLng = 128.60;
+            console.log('Start:', startLat, startLng, 'End:', endLat, endLng);
 
             // 출발지 마커
             startMarker = L.circleMarker([startLat, startLng], {
@@ -367,6 +369,7 @@
             // 경로 폴리라인
             if (routeData.path && routeData.path.length > 0) {
                 const pathCoords = routeData.path.map(p => [p.lat, p.lng]);
+                console.log('Path coords:', pathCoords);
                 routeLine = L.polyline(pathCoords, {
                     color: '#667eea',
                     weight: 5,
@@ -461,6 +464,7 @@
                 }
 
                 const data = await response.json();
+                console.log('API Response:', data);
 
                 if (data.success) {
                     document.getElementById('distance').textContent =
@@ -471,6 +475,7 @@
                     document.getElementById('shade').textContent = shadeScore + '점';
                     document.getElementById('shade-bar').style.width = shadeScore + '%';
                     document.getElementById('result-panel').classList.add('show');
+                    console.log('Calling updateMapWithRoute...');
                     updateMapWithRoute(data);
                 } else {
                     showError(data.message || '경로를 찾을 수 없습니다');
